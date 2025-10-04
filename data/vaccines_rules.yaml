@@ -54,7 +54,14 @@ herpes_zoster:
 pneumo_20_23:
   label: "Pneumocócicas 20V + 23V (adulto)"
   rules:
-    - { field: "age", op: ">=", value: 60 }
+    any_of:
+      - [ { field: "age", op: ">=", value: 60, reason: "≥60 anos" } ]
+      - [ { field: "dpoc", op: "==", value: true, reason: "DPOC" } ]
+      - [ { field: "dm", op: "==", value: true, reason: "DM" } ]
+      - [ { field: "imunossuprimido", op: "==", value: true, reason: "Imunossupressão" } ]
+      - [ { field: "renal_cronica", op: "==", value: true, reason: "DRC" } ]
+      - [ { field: "hepatica_cronica", op: "==", value: true, reason: "Doença hepática" } ]
+      - [ { field: "cardiovascular_cronica", op: "==", value: true, reason: "Doença cardiovascular" } ]
   schedule: "1 dose 20V; 23V após 6–12 meses."
   refs: ["SBIm – Pneumocócicas"]
   contraindications: ["Anafilaxia a componentes."]
