@@ -27,3 +27,8 @@ else:
                 with st.expander("Referências"):
                     for r in v["refs"]:
                         st.markdown(f"- {r}")
+
+if v.get("contraindications"):
+    with st.expander("Contraindicações"):
+        for c in v["contraindications"]:
+            st.markdown(f"- {c}")
