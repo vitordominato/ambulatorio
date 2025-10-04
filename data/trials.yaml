@@ -1,1 +1,12 @@
+- id: onco-lung-001
+  title: "Inibidor X em CPNPC estágio III"
+  status: "recruiting"
+  start_date: "2025-01-10"
+  end_date: "2026-12-31"
+  include_rules:
+    - { field: "age", op: ">=", value: 18, reason: "≥18 anos" }
+    - { field: "comorbidities", op: "in", value: ["Neoplasia Ativa"], reason: "Câncer ativo" }
+  exclude_rules: []
+  contacts: ["pesquisa@instituicao.org"]
+  links: ["https://exemplo.org/protocolo.pdf"]
 
