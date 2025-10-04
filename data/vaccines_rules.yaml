@@ -1,1 +1,32 @@
+dtpa_health_workers:
+  label: "dTpa (trabalhador da saúde)"
+  rules:
+    - { field: "is_health_worker", op: "==", value: true, reason: "Profissional de saúde" }
+  schedule: "1 dose de dTpa (reforço se >10 anos); completar esquema dT."
+  references:
+    - "SBIm – Calendário Ocupacional"
+
+hepb_any_adult:
+  label: "Hepatite B (adultos)"
+  rules:
+    - { field: "age", op: ">=", value: 18, reason: "≥18 anos" }
+  schedule: "3 doses (0-1-6) conforme situação vacinal."
+  references:
+    - "SBIm – Calendário Adulto"
+
+pneumo_20_23_comorbs:
+  label: "Pneumocócica (PCV20 + PPSV23) em comorbidades"
+  rules:
+    - { field: "comorbidities", op: "in", value: ["DPOC","Doença Renal","Doença Hepática","Cardiopatia","Neoplasia Ativa"], reason: "Comorbidade de risco" }
+  schedule: "PCV20 e PPSV23 conforme diretriz e intervalo recomendado."
+  references:
+    - "SBIm – Recomendação especial"
+
+hpv_18_45_all:
+  label: "HPV (18–45 anos)"
+  rules:
+    - { field: "age", op: "range", value: [18,45], reason: "18–45 anos" }
+  schedule: "Esquema conforme faixa etária/sexo e disponibilidade local."
+  references:
+    - "SBIm – HPV"
 
