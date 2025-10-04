@@ -46,12 +46,12 @@ crc_colonoscopy_famhx_40plus:
   link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/C%C3%82NCER%20COLORRETAL_DO%20DIAGN%C3%93STICO%20AO%20TRATAMENTO.pdf"
 
 # LDCT – tabagismo ativo/ex
-ldct_smokers_50_80_by_status:
-  label: "TC de tórax de baixa dose (tabagista/ex)"
+ldct_smokers_50_80:
+  label: "TC de tórax de baixa dose (tabagista ou ex-tabagista)"
   rules:
     - { field: "age", op: "range", value: [50, 80], reason: "50–80 anos" }
-    - { field: "smoking_status", op: "in", value: ["Sim","Ex-tabagista"], reason: "Histórico de tabagismo" }
-  guidance: "Avaliar elegibilidade para LDCT anual conforme protocolo local."
+    - { field: "smoker_or_ex", op: "==", value: true, reason: "Tabagismo atual ou pregresso" }
+  guidance: "LDCT anual conforme protocolo institucional."
   link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/tabagismo%20ca%20pulmao.pdf"
 
 # LDCT – tabagismo passivo >50 (pedido seu)
