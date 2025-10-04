@@ -1,21 +1,21 @@
 import yaml
-from services.rules_engine import evaluate_rules, age_in_years
+from services.rules_engine import evaluate_rules
 
 def load_rules(path="data/vaccines_rules.yaml"):
+    """Carrega as regras de vacinação do arquivo YAML."""
     with open(path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
 
-def suggest_vaccines(patient: dict, rules_dict: dict):
-    p = {**patient, "age": age_in_years(patient["birth_date"])}
-    out = []
-    for key, item in rules_dict.items():
-        ok, why = evaluate_rules(p, item["rules"])
+def suggest_vaccines(patient: dict, rules: dict):
+    """Avalia todas as regras e retorna as vacinas recomendadas."""
+    recs = []
+    for key, vax in rules.items():
+        ok, reasons = evaluate_rules(patient, vax["rules"])
         if ok:
-            out.append({
-                "vaccine": item["label"],
-                "why": why,
-                "schedule": item.get("schedule"),
-                "refs": item.get("references", [])
+            recs.append({
+                "vaccine": vax["label"],
+                "schedule": vax.get("schedule", ""),
+                "refs": vax.get("refs", []),
+                "why": reasons
             })
-    return out
-
+    return recs
