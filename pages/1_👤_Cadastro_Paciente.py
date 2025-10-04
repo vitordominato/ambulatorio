@@ -4,14 +4,12 @@ import uuid, yaml
 
 st.title("👤 Cadastro do Paciente")
 
+# carrega fatores do YAML
 FACTS = yaml.safe_load(open("data/factors.yaml","r",encoding="utf-8"))["fatores"]
 
 with st.form("patient_form"):
-    name = st.text_input("Nome completo")
     sex = st.selectbox("Sexo biológico", ["M", "F", "I"], index=2)
     age = st.number_input("Idade", min_value=0, max_value=120, step=1)
-
-    smoking_status = st.selectbox("Tabagismo", ["Não", "Sim", "Ex-tabagista", "Passivo"])
     is_health_worker = st.checkbox("Profissional de Saúde")
 
     st.markdown("### 📋 Fatores clínicos e antecedentes")
@@ -27,14 +25,12 @@ with st.form("patient_form"):
 if submitted:
     payload = {
         "id": str(uuid.uuid4()),
-        "name": name,
         "sex": sex,
         "age": int(age),
         "comorbidities": [],
-        "smoking_status": smoking_status,
         "is_health_worker": is_health_worker,
 
-        # mapeamentos 1:1 (atenção ao alias 'gestante' -> is_pregnant)
+        # mapeamentos 1:1 com factors.yaml
         "imc_ge_25": checks.get("imc_ge_25", False),
         "smoker_or_ex": checks.get("smoker_or_ex", False),
         "is_pregnant": checks.get("gestante", False),
@@ -49,6 +45,7 @@ if submitted:
         "hepatica_cronica": checks.get("hepatica_cronica", False),
         "neoplasia_ativa": checks.get("neoplasia_ativa", False),
 
+        # neurovascular (se você estiver usando)
         "enxaqueca_refrataria": checks.get("enxaqueca_refrataria", False),
         "hipertensao_resistente": checks.get("hipertensao_resistente", False),
         "dislipidemia_ldl_maior_190": checks.get("dislipidemia_ldl_maior_190", False),
@@ -61,6 +58,7 @@ if submitted:
         "histfam_avc_isquemico": checks.get("histfam_avc_isquemico", False),
         "histfam_aneurisma_intracraniano": checks.get("histfam_aneurisma_intracraniano", False),
 
+        # AAA/aneurismas
         "histfam_aaa": checks.get("histfam_aaa", False),
         "outro_aneurisma": checks.get("outro_aneurisma", False),
         "transplantado": checks.get("transplantado", False),
