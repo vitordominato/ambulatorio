@@ -10,13 +10,8 @@ with st.form("patient_form"):
     name = st.text_input("Nome completo")
     sex = st.selectbox("Sexo biológico", ["M", "F", "I"], index=2)
     age = st.number_input("Idade", min_value=0, max_value=120, step=1)
-    
-    # novo campo de tabagismo
-    smoking_status = st.selectbox(
-        "Tabagismo",
-        ["Não", "Sim", "Ex-tabagista", "Passivo"]
-    )
-    
+
+    smoking_status = st.selectbox("Tabagismo", ["Não", "Sim", "Ex-tabagista", "Passivo"])
     is_health_worker = st.checkbox("Profissional de Saúde")
 
     st.markdown("### 📋 Fatores clínicos e antecedentes")
@@ -38,6 +33,8 @@ if submitted:
         "comorbidities": [],
         "smoking_status": smoking_status,
         "is_health_worker": is_health_worker,
+
+        # mapeamentos 1:1 (atenção ao alias 'gestante' -> is_pregnant)
         "imc_ge_25": checks.get("imc_ge_25", False),
         "smoker_or_ex": checks.get("smoker_or_ex", False),
         "is_pregnant": checks.get("gestante", False),
@@ -51,6 +48,22 @@ if submitted:
         "renal_cronica": checks.get("renal_cronica", False),
         "hepatica_cronica": checks.get("hepatica_cronica", False),
         "neoplasia_ativa": checks.get("neoplasia_ativa", False),
+
+        "enxaqueca_refrataria": checks.get("enxaqueca_refrataria", False),
+        "hipertensao_resistente": checks.get("hipertensao_resistente", False),
+        "dislipidemia_ldl_maior_190": checks.get("dislipidemia_ldl_maior_190", False),
+        "hbA1c_maior_7_5": checks.get("hbA1c_maior_7_5", False),
+        "doencas_colageno": checks.get("doencas_colageno", False),
+        "alcoolismo": checks.get("alcoolismo", False),
+        "uso_aco": checks.get("uso_aco", False),
+        "histfam_coronariana": checks.get("histfam_coronariana", False),
+        "histfam_ateromatose_sist": checks.get("histfam_ateromatose_sist", False),
+        "histfam_avc_isquemico": checks.get("histfam_avc_isquemico", False),
+        "histfam_aneurisma_intracraniano": checks.get("histfam_aneurisma_intracraniano", False),
+
+        "histfam_aaa": checks.get("histfam_aaa", False),
+        "outro_aneurisma": checks.get("outro_aneurisma", False),
+        "transplantado": checks.get("transplantado", False),
     }
     p = Patient(**payload).model_dump()
     st.session_state["patient"] = p
