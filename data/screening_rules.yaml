@@ -1,1 +1,24 @@
+mammography_women_40_74:
+  label: "Mamografia (rastreamento)"
+  rules:
+    - { field: "sex", op: "==", value: "F", reason: "Sexo feminino" }
+    - { field: "age", op: "range", value: [40, 74], reason: "40–74 anos" }
+  guidance: "Mamografia anual/bienal conforme risco e diretriz vigente."
+  link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/cancer%20mama%20rastreo.pdf"
+
+psa_prostate_general:
+  label: "Rastreio de próstata (PSA ± toque)"
+  rules:
+    - { field: "sex", op: "==", value: "M", reason: "Sexo masculino" }
+    - { field: "age", op: ">=", value: 50, reason: "≥50 anos" }
+  guidance: "Avaliar PSA e discussão compartilhada de rastreio."
+  link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/rastreamento_prostat_2023_sociedades.pdf"
+
+ldct_smokers_50_80:
+  label: "TC de tórax de baixa dose (tabagista/ex)"
+  rules:
+    - { field: "age", op: "range", value: [50, 80], reason: "50–80 anos" }
+    - { field: "smoking_history_pack_years", op: ">=", value: 20, reason: "≥20 pack-years" }
+  guidance: "Avaliar LDCT anual conforme critérios de elegibilidade."
+  link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/tabagismo%20ca%20pulmao.pdf"
 
