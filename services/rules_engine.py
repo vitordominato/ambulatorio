@@ -1,42 +1,50 @@
-import operator
+def _eval_single(patient, rule):
+    field = rule["field"]; op = rule["op"]; value = rule["value"]
+    reason = rule.get("reason", "")
+    if field not in patient: return False, None
+    val = patient[field]
+    ok = {
+        "==":  val == value,
+        "!=":  val != value,
+        ">=":  val >= value,
+        "<=":  val <= value,
+        ">":   val >  value,
+        "<":   val <  value,
+        "in":  val in value,
+        "range": value[0] <= val <= value[1],
+    }.get(op, False)
+    return ok, (reason if ok and reason else None)
 
-OPS = {
-    ">=": operator.ge, "<=": operator.le, "==": operator.eq,
-    ">": operator.gt, "<": operator.lt, "in": lambda a,b: a in b,
-    "not_in": lambda a,b: a not in b
-}
-
-def _check_simple(value, op, expected):
-    if op == "range":
-        lo, hi = expected
-        return (value is not None) and (lo <= value <= hi)
-    return OPS[op](value, expected)
-
-def _check_count_true(patient: dict, fields: list, op: str, value: int):
-    # conta quantos campos estão True; compara com value via op (>=, >, ==, etc.)
-    count = sum(1 for f in fields if bool(patient.get(f, False)))
-    return OPS[op](count, value), count
-
-def evaluate_rules(patient: dict, rules: list):
+def evaluate_rules(patient, rules):
     """
-    Cada regra pode ser:
-      - simples: {field, op, value, reason}
-      - contagem: {fields: [...], op: \">=\", value: 3, reason: \"≥3 fatores\"}
-    Todas as regras na lista precisam ser verdadeiras (AND).
+    Regras aceitas:
+      - lista simples (AND): [ {field, op, value}, ... ]
+      - any_of: pelo menos um dos blocos passa (OR)
+        any_of:
+          - [ {..}, {..} ]        # bloco-1 (AND interno)
+          - [ {..} ]              # bloco-2
+    Retorna (passou, [motivos])
     """
     reasons = []
+
+    # caso 'any_of'
+    if isinstance(rules, dict) and "any_of" in rules:
+        for block in rules["any_of"]:
+            block_ok = True; block_reasons = []
+            for r in block:
+                ok, why = _eval_single(patient, r)
+                if not ok:
+                    block_ok = False; break
+                if why: block_reasons.append(why)
+            if block_ok:
+                reasons.extend(block_reasons)
+                return True, reasons
+        return False, []
+
+    # lista simples (AND)
+    passed = True
     for r in rules:
-        if "fields" in r:
-            ok, count = _check_count_true(patient, r["fields"], r["op"], r["value"])
-            if not ok:
-                return False, []
-            if r.get("reason"):
-                reasons.append(f'{r["reason"]} (n={count})')
-        else:
-            v = patient.get(r["field"])
-            ok = _check_simple(v, r["op"], r["value"])
-            if not ok:
-                return False, []
-            if r.get("reason"):
-                reasons.append(r["reason"])
-    return True, reasons
+        ok, why = _eval_single(patient, r)
+        if not ok: passed = False
+        elif why: reasons.append(why)
+    return passed, reasons
