@@ -1,5 +1,9 @@
 # data/factors.yaml
+# Tudo que você marcar aqui vira checkbox no cadastro.
+# Para adicionar/remover, basta mexer nesta lista.
+
 fatores:
+  # já existentes
   - key: imc_ge_25
     label: "IMC ≥ 25"
   - key: smoker_or_ex
@@ -26,4 +30,38 @@ fatores:
     label: "Doença hepática crônica"
   - key: neoplasia_ativa
     label: "Neoplasia ativa"
+
+  # novos p/ neurovascular
+  - key: enxaqueca_refrataria
+    label: "Cefaleia tipo migrânea refratária"
+  - key: hipertensao_resistente
+    label: "Hipertensão arterial resistente (≥3 drogas)"
+  - key: dislipidemia_ldl_maior_190
+    label: "Dislipidemia (LDL > 190 mg/dL)"
+  - key: hbA1c_maior_7_5
+    label: "Diabetes (HbA1c > 7,5%)"
+  - key: doencas_colageno
+    label: "Doenças do colágeno/tecido conectivo"
+  - key: alcoolismo
+    label: "Alcoolismo"
+  - key: uso_aco
+    label: "Uso de contraceptivo oral"
+
+  # históricos familiares para neurovascular
+  - key: histfam_coronariana
+    label: "Hist. familiar de doença coronariana"
+  - key: histfam_ateromatose_sist
+    label: "Hist. familiar de ateromatose sistêmica"
+  - key: histfam_avc_isquemico
+    label: "Hist. familiar de AVC isquêmico"
+  - key: histfam_aneurisma_intracraniano
+    label: "Hist. familiar de aneurisma intracraniano"
+
+  # AAA/aneurismas gerais
+  - key: histfam_aaa
+    label: "Hist. familiar de AAA"
+  - key: outro_aneurisma
+    label: "Outro aneurisma arterial conhecido"
+  - key: transplantado
+    label: "Paciente transplantado (qualquer órgão)"
 
