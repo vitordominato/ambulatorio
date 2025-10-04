@@ -1,10 +1,6 @@
 # data/screening_rules.yaml
-# Regras de rastreamento dirigidas a partir de:
-# - sex: "M" | "F" | "I"
-# - age: int
-# - smoking_status: "Não" | "Sim" | "Ex-tabagista" | "Passivo"
-# - flags de fatores clínicos (bool): famhx_mama, famhx_prostata, famhx_colorretal, dpoc, etc.
 
+# MAMA
 mammography_women_40_74:
   label: "Mamografia (rastreamento)"
   rules:
@@ -13,6 +9,7 @@ mammography_women_40_74:
   guidance: "Mamografia anual/bienal conforme risco e diretriz vigente."
   link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/cancer%20mama%20rastreo.pdf"
 
+# COLO UTERINO
 cervical_cancer_25_65:
   label: "Rastreamento de colo uterino (citologia/HPV)"
   rules:
@@ -21,6 +18,7 @@ cervical_cancer_25_65:
   guidance: "Citologia/HPV conforme periodicidade do protocolo local."
   link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/diretrizes_para_o_rastreamento_do_cancer_do_colo_do_utero_2016_corrigido.pdf"
 
+# PRÓSTATA
 psa_prostate_general_50plus:
   label: "Rastreio de próstata (PSA ± toque)"
   rules:
@@ -38,14 +36,16 @@ psa_prostate_famhx_45plus:
   guidance: "Iniciar rastreio antecipado conforme diretriz e preferência do paciente."
   link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/rastreamento_prostat_2023_sociedades.pdf"
 
+# COLORRETAL – familiar
 crc_colonoscopy_famhx_40plus:
   label: "Colonoscopia antecipada (história familiar colorretal)"
   rules:
     - { field: "famhx_colorretal", op: "==", value: true, reason: "Histórico familiar de câncer colorretal" }
-    - { field: "age", op: ">=", value: 40, reason: "≥40 anos ou 10 anos antes do diagnóstico do familiar" }
+    - { field: "age", op: ">=", value: 40, reason: "≥40 anos (ou 10 anos antes do familiar)" }
   guidance: "Colonoscopia antecipada por risco familiar."
   link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/C%C3%82NCER%20COLORRETAL_DO%20DIAGN%C3%93STICO%20AO%20TRATAMENTO.pdf"
 
+# LDCT – tabagismo ativo/ex
 ldct_smokers_50_80_by_status:
   label: "TC de tórax de baixa dose (tabagista/ex)"
   rules:
@@ -53,7 +53,8 @@ ldct_smokers_50_80_by_status:
     - { field: "smoking_status", op: "in", value: ["Sim","Ex-tabagista"], reason: "Histórico de tabagismo" }
   guidance: "Avaliar elegibilidade para LDCT anual conforme protocolo local."
   link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/tabagismo%20ca%20pulmao.pdf"
-  
+
+# LDCT – tabagismo passivo >50 (pedido seu)
 ldct_passive_over50:
   label: "TC de tórax de baixa dose (tabagismo passivo)"
   rules:
@@ -62,16 +63,56 @@ ldct_passive_over50:
   guidance: "Considerar LDCT anual para exposição passiva ao tabaco acima de 50 anos, conforme protocolo institucional."
   link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/tabagismo%20ca%20pulmao.pdf"
 
-metabolic_screen_imc_comorb:
-  label: "Avaliação metabólica (IMC/comorbidades)"
+# METABÓLICO
+metabolic_screen_imc:
+  label: "Avaliação metabólica (IMC ≥25)"
   rules:
     - { field: "imc_ge_25", op: "==", value: true, reason: "IMC ≥25" }
-  guidance: "Avaliação metabólica e tratamento conforme diretrizes de obesidade."
+  guidance: "Avaliação metabólica e tratamento conforme diretrizes."
   link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/Diretrizes-Brasileiras-de-Obesidade-2016.pdf"
 
+# MGUS / Gamopatias
 mgus_over50:
   label: "Avaliação para gamopatias monoclonais"
   rules:
     - { field: "age", op: ">=", value: 50, reason: "≥50 anos" }
   guidance: "Considerar investigação laboratorial quando indicado."
   link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/Gamopatias_monoclonais_criterios_diagnosticos.pdf"
+
+# AAA (Aorta Abdominal) – critérios principais
+aaa_ultrasound_primary:
+  label: "USG de aorta abdominal (rastreamento de AAA)"
+  rules:
+    - { field: "age", op: ">=", value: 65, reason: "≥65 anos" }
+    - { fields: ["smoker_or_ex","histfam_aaa","outro_aneurisma","transplantado"], op: ">=", value: 1, reason: "Fator de alto risco presente" }
+  guidance: "Solicitar USG de aorta/ilíacas; encaminhar ao Vascular se aneurisma."
+  link_pdf: ""  # você vai subir o PDF 'Rastreamento AAA' no GitHub; pode colar o link raw aqui depois.
+
+# TRIAGEM NEUROVASCULAR – ≥3 fatores
+neurovascular_triage_3plus:
+  label: "Triagem de doenças neurovasculares (≥3 fatores)"
+  rules:
+    - { fields: [
+          "sex_feminino",
+          "idade_maior_40",
+          "enxaqueca_refrataria",
+          "hipertensao_resistente",
+          "dislipidemia_ldl_maior_190",
+          "hbA1c_maior_7_5",
+          "cardiovascular_cronica",
+          "doencas_colageno",
+          "smoker_or_ex",
+          "alcoolismo",
+          "uso_aco",
+          "histfam_coronariana",
+          "histfam_ateromatose_sist",
+          "histfam_avc_isquemico",
+          "histfam_aneurisma_intracraniano"
+        ],
+        op: ">=",
+        value: 3,
+        reason: "≥3 fatores de risco"
+      }
+  guidance: "Solicitar AngioTC de crânio/vasos cervicais (ou AngioRM TOF se DRC)."
+  link_pdf: ""  # cole aqui o raw do PDF 'Triagem Doenças Neurovasculares' quando subir
+
