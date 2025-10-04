@@ -1,5 +1,5 @@
 import streamlit as st
-from services.vaccines_engine import suggest_vaccines, load_rules, age_in_years
+from services.vaccines_engine import suggest_vaccines, load_rules
 
 st.title("💉 Recomendações Vacinais (SBIm)")
 patient = st.session_state.get("patient")
@@ -9,19 +9,21 @@ if not patient:
     st.stop()
 
 rules = load_rules("data/vaccines_rules.yaml")
-patient = {**patient, "age": age_in_years(patient["birth_date"])}
 
-sugs = suggest_vaccines(patient, rules)
-if not sugs:
-    st.success("Sem pendências vacinais.")
+# Agora a idade já está no dicionário patient
+vaccines = suggest_vaccines(patient, rules)
+
+if not vaccines:
+    st.success("Sem pendências vacinais detectadas.")
 else:
-    for s in sugs:
+    for v in vaccines:
         with st.container(border=True):
-            st.markdown(f"**{s['vaccine']}** — recomendado")
-            if s.get("schedule"): st.write("Esquema:", s["schedule"])
-            if s.get("why"): st.caption("Motivos: " + "; ".join(s["why"]))
-            if s.get("refs"):
+            st.markdown(f"**{v['vaccine']}** — recomendado")
+            if v.get("schedule"):
+                st.write("Esquema:", v["schedule"])
+            if v.get("why"):
+                st.caption("Motivos: " + "; ".join(v["why"]))
+            if v.get("refs"):
                 with st.expander("Referências"):
-                    for r in s["refs"]:
+                    for r in v["refs"]:
                         st.markdown(f"- {r}")
-
