@@ -1,1 +1,29 @@
+# data/factors.yaml
+fatores:
+  - key: imc_ge_25
+    label: "IMC ≥ 25"
+  - key: smoker_or_ex
+    label: "Tabagista ou ex-tabagista"
+  - key: gestante
+    label: "Gestante"
+  - key: famhx_mama
+    label: "Histórico familiar de câncer de mama"
+  - key: famhx_prostata
+    label: "Histórico familiar de câncer de próstata"
+  - key: famhx_colorretal
+    label: "Histórico familiar de câncer colorretal"
+  - key: dm
+    label: "Diabetes Mellitus"
+  - key: dpoc
+    label: "DPOC"
+  - key: imunossuprimido
+    label: "Imunossuprimido"
+  - key: cardiovascular_cronica
+    label: "Doença cardiovascular crônica"
+  - key: renal_cronica
+    label: "Doença renal crônica"
+  - key: hepatica_cronica
+    label: "Doença hepática crônica"
+  - key: neoplasia_ativa
+    label: "Neoplasia ativa"
 
