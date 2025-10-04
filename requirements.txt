@@ -1,1 +1,7 @@
 streamlit
+pydantic
+pyyaml
+reportlab
+sqlmodel
+pandas
+streamlit-authenticator
