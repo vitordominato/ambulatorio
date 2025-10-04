@@ -1,4 +1,4 @@
-        import streamlit as st
+import streamlit as st
 from services.vaccines_engine import suggest_vaccines, load_rules
 
 st.title("💉 Recomendações Vacinais (SBIm)")
@@ -8,7 +8,10 @@ if not patient:
     st.warning("Cadastre um paciente primeiro.")
     st.stop()
 
+# Carrega regras do YAML
 rules = load_rules("data/vaccines_rules.yaml")
+
+# Gera recomendações para o paciente atual
 vaccines = suggest_vaccines(patient, rules)
 
 if not vaccines:
