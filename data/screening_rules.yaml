@@ -53,6 +53,14 @@ ldct_smokers_50_80_by_status:
     - { field: "smoking_status", op: "in", value: ["Sim","Ex-tabagista"], reason: "Histórico de tabagismo" }
   guidance: "Avaliar elegibilidade para LDCT anual conforme protocolo local."
   link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/tabagismo%20ca%20pulmao.pdf"
+  
+ldct_passive_over50:
+  label: "TC de tórax de baixa dose (tabagismo passivo)"
+  rules:
+    - { field: "age", op: ">", value: 50, reason: ">50 anos" }
+    - { field: "smoking_status", op: "==", value: "Passivo", reason: "Tabagismo passivo" }
+  guidance: "Considerar LDCT anual para exposição passiva ao tabaco acima de 50 anos, conforme protocolo institucional."
+  link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/tabagismo%20ca%20pulmao.pdf"
 
 metabolic_screen_imc_comorb:
   label: "Avaliação metabólica (IMC/comorbidades)"
