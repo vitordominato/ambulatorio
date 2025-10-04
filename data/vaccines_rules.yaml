@@ -1,118 +1,140 @@
-# =========================
-# INFANTIS / PAEDIATRICS
-# =========================
+# =========================================
+# VACINAS – conjunto base (funciona com AND)
+# Alinhado ao Patient: age, sex, is_health_worker, dpoc, dm, imunossuprimido etc.
+# =========================================
 
-hepatite_b_infantil:
-  label: "Hepatite B (infantil)"
+dtpa_reforco:
+  label: "dTpa (Tríplice bacteriana acelular do adulto)"
   rules:
-    - { field: "age", op: "<", value: 1 }   # até 11 meses (exibir no 1º ano)
-  schedule: "3 doses (0, 1 e 6 meses). Em maternidade: 1ª dose ao nascer."
-  refs:
-    - "SBIm / Ministério da Saúde – Esquema infantil"
-  contraindications:
-    - "Anafilaxia a componentes (ex.: levedura)."
+    - { field: "age", op: ">=", value: 10 }
+  schedule: "1 dose e reforços (dT) a cada 10 anos; em gestantes, 1 dose a cada gestação."
+  refs: ["SBIm – Adultos"]
+  contraindications: ["Anafilaxia prévia a componente/dose."]
 
-pentavalente_infantil:
-  label: "Pentavalente (DTP + Hib + Hep B) — infantil"
+hepatite_b_adulto:
+  label: "Hepatite B (adulto)"
   rules:
-    - { field: "age", op: "<", value: 1 }
-  schedule: "3 doses: 2, 4 e 6 meses; reforços conforme calendário local."
-  refs:
-    - "SBIm – Pentavalente"
-  contraindications:
-    - "Anafilaxia a dose anterior ou componente."
-    - "Doença febril moderada a grave: adiar."
+    - { field: "age", op: ">=", value: 18 }
+  schedule: "3 doses (0, 1 e 6 meses)."
+  refs: ["SBIm – Hepatite B"]
+  contraindications: ["Alergia grave a levedura/componentes."]
 
-hexavalente_infantil:
-  label: "Hexavalente (DTPa + Hib + Hep B + IPV) — infantil"
+influenza:
+  label: "Influenza (gripe)"
   rules:
-    - { field: "age", op: "<", value: 1 }
-  schedule: "3 doses: 2, 4 e 6 meses; reforços conforme produto e calendário."
-  refs:
-    - "SBIm – Hexavalente (rede privada)"
-  contraindications:
-    - "Anafilaxia a componente."
-    - "Adiar se febre moderada/grave."
+    - { field: "age", op: ">=", value: 6 }
+  schedule: "1 dose anual (sazonal)."
+  refs: ["SBIm – Influenza"]
+  contraindications: ["Anafilaxia a dose anterior/ovo; adiar se febre."]
 
-rotavirus_infantil:
-  label: "Rotavírus — infantil"
+covid19:
+  label: "COVID-19 (reforço anual)"
   rules:
-    - { field: "age", op: "<", value: 1 }
-  schedule: "Vacina RV1 (2 doses: 2 e 4 meses; 1ª dose até 14s6d; 2ª até 7m29d) ou RV5 (3 doses: 2, 4, 6 meses; última até 8 meses). **Respeitar janelas etárias!**"
-  refs:
-    - "SBIm / MS – Rotavírus"
-  contraindications:
-    - "Invaginação intestinal prévia."
-    - "Imunodeficiência combinada grave."
-    - "Doença gastrointestinal aguda: adiar."
+    - { field: "age", op: ">=", value: 5 }
+  schedule: "1 reforço/ano (≥ 6 meses da última dose)."
+  refs: ["MS 2025 / SBIm"]
+  contraindications: ["Anafilaxia prévia; adiar em febre moderada/grave."]
 
-pcv13_infantil:
-  label: "Pneumocócica conjugada 13-valente — infantil"
+hpv_adulto:
+  label: "HPV"
   rules:
-    - { field: "age", op: "<", value: 5 }
-  schedule: "Esquema sequencial conforme início (2+1 ou 3+1) segundo idade de início."
-  refs:
-    - "SBIm – PCV13 em crianças"
-  contraindications:
-    - "Anafilaxia a dose/componente."
+    - { field: "age", op: "range", value: [9, 45] }
+  schedule: "2 doses (0–6m) até 14 anos; ≥15 anos: 3 doses (0–2–6m)."
+  refs: ["SBIm – HPV"]
+  contraindications: ["Gestação (adiar)."]
 
-pcv15_infantil:
-  label: "Pneumocócica conjugada 15-valente — infantil"
+herpes_zoster:
+  label: "Herpes-zóster recombinante (HZ/su)"
   rules:
-    - { field: "age", op: "<", value: 5 }
-  schedule: "Esquema conforme idade de início; segue recomendações equivalentes à PCV."
-  refs:
-    - "SBIm – PCV15 em crianças"
-  contraindications:
-    - "Anafilaxia a dose/componente."
+    - { field: "age", op: ">=", value: 50 }
+  schedule: "2 doses (2–6 meses)."
+  refs: ["SBIm – HZ/su"]
+  contraindications: ["Gestação; adiar em doença aguda."]
 
-pcv20_infantil:
-  label: "Pneumocócica 20-valente — infantil"
-  rules:
-    - { field: "age", op: "<", value: 6 }
-  schedule: "Esquema conforme produto disponível/local; considerar substituição/integração a esquemas PCV."
-  refs:
-    - "SBIm 2025 – PCV20 pediátrica (onde disponível)"
-  contraindications:
-    - "Anafilaxia a dose/componente."
-
-# =========================
-# VSR — RÓTULOS ESPECÍFICOS (ADULTO)
-# =========================
-
-rsv_abrysvo_adulto:
-  label: "Vírus sincicial respiratório — Abrysvo (adulto)"
+pneumo_20_23:
+  label: "Pneumocócicas 20V + 23V (adulto)"
   rules:
     - { field: "age", op: ">=", value: 60 }
-  schedule: "1 dose única. Pode coadministrar com Influenza/COVID em locais distintos."
-  refs:
-    - "SBIm / ACIP — Abrysvo"
-  contraindications:
-    - "Reação alérgica grave a dose anterior."
-    - "Adiar em doença febril aguda."
+  schedule: "1 dose 20V; 23V após 6–12 meses."
+  refs: ["SBIm – Pneumocócicas"]
+  contraindications: ["Anafilaxia a componentes."]
 
-rsv_arexvy_adulto:
-  label: "Vírus sincicial respiratório — Arexvy (adulto)"
+dengue_tak003:
+  label: "Dengue (TAK-003)"
+  rules:
+    - { field: "age", op: "range", value: [4, 60] }
+  schedule: "2 doses com 3 meses de intervalo."
+  refs: ["MS/SBIm – Dengue"]
+  contraindications: ["Gestação e lactação; imunossupressão importante; adiar em febre."]
+
+# —— VSR (adulto) ——
+rsv_vacina:
+  label: "Vírus sincicial respiratório (VSR) — adulto"
   rules:
     - { field: "age", op: ">=", value: 60 }
-  schedule: "1 dose única. Considerar prioridade a crônicos/imunossuprimidos."
-  refs:
-    - "SBIm / ACIP — Arexvy"
-  contraindications:
-    - "Reação alérgica grave a dose anterior."
-    - "Adiar em doença febril aguda."
+  schedule: "1 dose única (proteção ≈12 meses)."
+  refs: ["SBIm 2025 / ACIP"]
+  contraindications: ["Anafilaxia prévia; adiar em doença febril aguda."]
 
-# =========================
-# IMUNOPROFILAXIA (NÃO É VACINA)
-# =========================
-
-palivizumabe_info:
-  label: "Palivizumabe (imunoprofilaxia anti-VSR) — lactentes de alto risco"
+rsv_abrysvo:
+  label: "VSR — Abrysvo (adulto)"
   rules:
-    - { field: "age", op: "<", value: 2 }   # exibir em <2 anos para lembrar
-  schedule: "5 doses mensais durante a sazonalidade, especialmente prematuros, DBP, cardiopatas congênitos, imunodeficiências — conforme protocolos MS/Instituição."
-  refs:
-    - "Ministério da Saúde / SBIm — Palivizumabe"
-  contraindications:
-    - "Anafilaxia a dose/componente."
+    - { field: "age", op: ">=", value: 60 }
+  schedule: "1 dose única; pode coadministrar com Influenza/COVID em locais distintos."
+  refs: ["ACIP/SBIm — Abrysvo"]
+  contraindications: ["Anafilaxia; adiar em febre."]
+
+rsv_arexvy:
+  label: "VSR — Arexvy (adulto)"
+  rules:
+    - { field: "age", op: ">=", value: 60 }
+  schedule: "1 dose única; priorizar crônicos/imunossuprimidos."
+  refs: ["ACIP/SBIm — Arexvy"]
+  contraindications: ["Anafilaxia; adiar em febre."]
+
+# —— Ocupacionais (Profissionais de Saúde) ——
+prof_saude_dtpa:
+  label: "Profissional de Saúde — dTpa"
+  rules:
+    - { field: "is_health_worker", op: "==", value: true }
+    - { field: "age", op: ">=", value: 10 }
+  schedule: "1 dose agora se esquema incompleto; reforço (dT) a cada 10 anos."
+  refs: ["SBIm — Trabalhadores da saúde"]
+  contraindications: ["Anafilaxia; adiar em febre."]
+
+prof_saude_hepatite_b:
+  label: "Profissional de Saúde — Hepatite B"
+  rules:
+    - { field: "is_health_worker", op: "==", value: true }
+    - { field: "age", op: ">=", value: 18 }
+  schedule: "3 doses (0–1–6m); considerar anti-HBs 30–60 dias após 3ª dose."
+  refs: ["SBIm — Trabalhadores"]
+  contraindications: ["Alergia a levedura/componentes."]
+
+prof_saude_influenza:
+  label: "Profissional de Saúde — Influenza"
+  rules:
+    - { field: "is_health_worker", op: "==", value: true }
+    - { field: "age", op: ">=", value: 6 }
+  schedule: "1 dose anual."
+  refs: ["SBIm — Trabalhadores"]
+  contraindications: ["Anafilaxia a dose/ovo; adiar se febre."]
+
+prof_saude_mmr:
+  label: "Profissional de Saúde — Tríplice viral (MMR) (se não imune)"
+  rules:
+    - { field: "is_health_worker", op: "==", value: true }
+    - { field: "age", op: ">=", value: 10 }
+  schedule: "2 doses (≥30 dias entre si) se sem comprovação de imunidade."
+  refs: ["SBIm — Trabalhadores"]
+  contraindications: ["Gestantes; imunossupressão grave."]
+
+prof_saude_varicela:
+  label: "Profissional de Saúde — Varicela (se não imune)"
+  rules:
+    - { field: "is_health_worker", op: "==", value: true }
+    - { field: "age", op: ">=", value: 10 }
+  schedule: "2 doses (≥4 semanas) se sem histórico ou sorologia negativa."
+  refs: ["SBIm — Trabalhadores"]
+  contraindications: ["Gestantes; imunossupressão grave."]
 
