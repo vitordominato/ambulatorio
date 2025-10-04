@@ -76,7 +76,7 @@ mgus_over50:
   label: "Avaliação para gamopatias monoclonais"
   rules:
     - { field: "age", op: ">=", value: 50, reason: "≥50 anos" }
-  guidance: "Considerar investigação laboratorial quando indicado."
+  guidance: "Solicitar eletroforese de proteínas."
   link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/Gamopatias_monoclonais_criterios_diagnosticos.pdf"
 
 # AAA (Aorta Abdominal) – critérios principais
