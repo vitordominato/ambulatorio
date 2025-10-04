@@ -6,3 +6,4 @@ sqlmodel
 pandas
 streamlit-authenticator
 python-docx
+requests
