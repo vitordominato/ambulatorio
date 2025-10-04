@@ -7,9 +7,9 @@ class Patient(BaseModel):
     sex: Literal["M","F","I"]
     age: int
     comorbidities: List[str] = []
-    smoking_history_pack_years: int = 0
+    smoking_status: Literal["Não", "Sim", "Ex-tabagista", "Passivo"] = "Não"
     is_health_worker: bool = False
-    # flags mapeadas dos fatores
+    # fatores clínicos
     imc_ge_25: bool = False
     smoker_or_ex: bool = False
     is_pregnant: bool = False
