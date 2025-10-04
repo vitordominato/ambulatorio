@@ -1,3 +1,10 @@
+# data/screening_rules.yaml
+# Regras de rastreamento dirigidas a partir de:
+# - sex: "M" | "F" | "I"
+# - age: int
+# - smoking_status: "Não" | "Sim" | "Ex-tabagista" | "Passivo"
+# - flags de fatores clínicos (bool): famhx_mama, famhx_prostata, famhx_colorretal, dpoc, etc.
+
 mammography_women_40_74:
   label: "Mamografia (rastreamento)"
   rules:
@@ -6,7 +13,15 @@ mammography_women_40_74:
   guidance: "Mamografia anual/bienal conforme risco e diretriz vigente."
   link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/cancer%20mama%20rastreo.pdf"
 
-psa_prostate_general:
+cervical_cancer_25_65:
+  label: "Rastreamento de colo uterino (citologia/HPV)"
+  rules:
+    - { field: "sex", op: "==", value: "F", reason: "Sexo feminino" }
+    - { field: "age", op: "range", value: [25, 65], reason: "25–65 anos" }
+  guidance: "Citologia/HPV conforme periodicidade do protocolo local."
+  link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/diretrizes_para_o_rastreamento_do_cancer_do_colo_do_utero_2016_corrigido.pdf"
+
+psa_prostate_general_50plus:
   label: "Rastreio de próstata (PSA ± toque)"
   rules:
     - { field: "sex", op: "==", value: "M", reason: "Sexo masculino" }
@@ -14,11 +29,41 @@ psa_prostate_general:
   guidance: "Avaliar PSA e discussão compartilhada de rastreio."
   link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/rastreamento_prostat_2023_sociedades.pdf"
 
-ldct_smokers_50_80:
+psa_prostate_famhx_45plus:
+  label: "Rastreio de próstata antecipado (história familiar)"
+  rules:
+    - { field: "sex", op: "==", value: "M", reason: "Sexo masculino" }
+    - { field: "famhx_prostata", op: "==", value: true, reason: "Histórico familiar de câncer de próstata" }
+    - { field: "age", op: ">=", value: 45, reason: "≥45 anos" }
+  guidance: "Iniciar rastreio antecipado conforme diretriz e preferência do paciente."
+  link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/rastreamento_prostat_2023_sociedades.pdf"
+
+crc_colonoscopy_famhx_40plus:
+  label: "Colonoscopia antecipada (história familiar colorretal)"
+  rules:
+    - { field: "famhx_colorretal", op: "==", value: true, reason: "Histórico familiar de câncer colorretal" }
+    - { field: "age", op: ">=", value: 40, reason: "≥40 anos ou 10 anos antes do diagnóstico do familiar" }
+  guidance: "Colonoscopia antecipada por risco familiar."
+  link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/C%C3%82NCER%20COLORRETAL_DO%20DIAGN%C3%93STICO%20AO%20TRATAMENTO.pdf"
+
+ldct_smokers_50_80_by_status:
   label: "TC de tórax de baixa dose (tabagista/ex)"
   rules:
     - { field: "age", op: "range", value: [50, 80], reason: "50–80 anos" }
-    - { field: "smoking_history_pack_years", op: ">=", value: 20, reason: "≥20 pack-years" }
-  guidance: "Avaliar LDCT anual conforme critérios de elegibilidade."
+    - { field: "smoking_status", op: "in", value: ["Sim","Ex-tabagista"], reason: "Histórico de tabagismo" }
+  guidance: "Avaliar elegibilidade para LDCT anual conforme protocolo local."
   link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/tabagismo%20ca%20pulmao.pdf"
 
+metabolic_screen_imc_comorb:
+  label: "Avaliação metabólica (IMC/comorbidades)"
+  rules:
+    - { field: "imc_ge_25", op: "==", value: true, reason: "IMC ≥25" }
+  guidance: "Avaliação metabólica e tratamento conforme diretrizes de obesidade."
+  link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/Diretrizes-Brasileiras-de-Obesidade-2016.pdf"
+
+mgus_over50:
+  label: "Avaliação para gamopatias monoclonais"
+  rules:
+    - { field: "age", op: ">=", value: 50, reason: "≥50 anos" }
+  guidance: "Considerar investigação laboratorial quando indicado."
+  link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/Gamopatias_monoclonais_criterios_diagnosticos.pdf"
