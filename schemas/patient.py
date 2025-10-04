@@ -3,20 +3,15 @@ from typing import List, Literal
 
 class Patient(BaseModel):
     id: str
-    name: str
     sex: Literal["M","F","I"]
     age: int
     comorbidities: List[str] = []
-
-    # tabagismo em categorias (novo)
-    smoking_status: Literal["Não", "Sim", "Ex-tabagista", "Passivo"] = "Não"
-
     is_health_worker: bool = False
 
-    # fatores/antecedentes (chaves idênticas às do factors.yaml)
+    # fatores/antecedentes
     imc_ge_25: bool = False
     smoker_or_ex: bool = False
-    is_pregnant: bool = False  # mapeia "gestante"
+    is_pregnant: bool = False  # 'gestante' no formulário
     famhx_mama: bool = False
     famhx_prostata: bool = False
     famhx_colorretal: bool = False
@@ -28,7 +23,7 @@ class Patient(BaseModel):
     hepatica_cronica: bool = False
     neoplasia_ativa: bool = False
 
-    # neurovascular
+    # neurovascular (se em uso)
     enxaqueca_refrataria: bool = False
     hipertensao_resistente: bool = False
     dislipidemia_ldl_maior_190: bool = False
@@ -41,7 +36,8 @@ class Patient(BaseModel):
     histfam_avc_isquemico: bool = False
     histfam_aneurisma_intracraniano: bool = False
 
-    # AAA/aneurismas gerais
+    # AAA/aneurismas
     histfam_aaa: bool = False
     outro_aneurisma: bool = False
     transplantado: bool = False
+
