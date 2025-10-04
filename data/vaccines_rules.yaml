@@ -170,3 +170,102 @@ rsv_vacina:
     - "Reação alérgica grave a dose anterior."
     - "Adiar em doença febril aguda."
 
+    # =========================================
+# PROFISSIONAIS DE SAÚDE – indicações ocupacionais
+# (médicos, enfermagem, fisio, odonto, fono, psic, TSB/ASB, residentes/estagiários etc.)
+# Usa a flag do cadastro: is_health_worker = true
+# =========================================
+
+prof_saude_dtpa:
+  label: "Profissional de Saúde — dTpa"
+  rules:
+    - { field: "is_health_worker", op: "==", value: true }
+    - { field: "age", op: ">=", value: 10 }
+  schedule: "1 dose agora se esquema incompleto ou desatualizado; depois reforço com dT a cada 10 anos."
+  refs:
+    - "SBIm 2025 — Trabalhadores da Saúde"
+  contraindications:
+    - "Anafilaxia prévia a dose/componente."
+    - "Adiar em febre moderada a grave."
+
+prof_saude_hepatite_b:
+  label: "Profissional de Saúde — Hepatite B"
+  rules:
+    - { field: "is_health_worker", op: "==", value: true }
+    - { field: "age", op: ">=", value: 18 }
+  schedule: "3 doses (0, 1 e 6 meses). Considerar anti-HBs 30–60 dias após 3ª dose."
+  refs:
+    - "SBIm 2025 — Hepatite B para trabalhadores"
+  contraindications:
+    - "Hipersensibilidade a componentes (ex.: levedura)."
+
+prof_saude_influenza:
+  label: "Profissional de Saúde — Influenza"
+  rules:
+    - { field: "is_health_worker", op: "==", value: true }
+    - { field: "age", op: ">=", value: 6 }
+  schedule: "1 dose anual (sazonal)."
+  refs:
+    - "SBIm 2025 — Influenza (ocupacional)"
+  contraindications:
+    - "Reação alérgica grave a dose anterior ou ovo de galinha."
+
+prof_saude_covid19:
+  label: "Profissional de Saúde — COVID-19"
+  rules:
+    - { field: "is_health_worker", op: "==", value: true }
+    - { field: "age", op: ">=", value: 5 }
+  schedule: "Reforço anual com vacina atualizada (≥ 6 meses da última dose)."
+  refs:
+    - "Ministério da Saúde 2025 / SBIm — Trabalhadores da saúde"
+  contraindications:
+    - "Anafilaxia à dose anterior."
+    - "Adiar em doença febril moderada/grave."
+
+prof_saude_varicela:
+  label: "Profissional de Saúde — Varicela (se não imune)"
+  rules:
+    - { field: "is_health_worker", op: "==", value: true }
+    - { field: "age", op: ">=", value: 10 }
+  schedule: "2 doses, intervalo mínimo de 4 semanas (se sem histórico de doença ou sorologia negativa)."
+  refs:
+    - "SBIm 2025 — Varicela para trabalhadores"
+  contraindications:
+    - "Gestantes."
+    - "Imunossuprimidos graves."
+
+prof_saude_mmr:
+  label: "Profissional de Saúde — Tríplice viral (MMR) (se não imune)"
+  rules:
+    - { field: "is_health_worker", op: "==", value: true }
+    - { field: "age", op: ">=", value: 10 }
+  schedule: "2 doses, intervalo mínimo de 30 dias (se sem comprovação vacinal)."
+  refs:
+    - "SBIm 2025 — Sarampo em trabalhadores"
+  contraindications:
+    - "Gestantes."
+    - "Imunossuprimidos graves."
+
+prof_saude_meningo_acwy:
+  label: "Profissional de Saúde — Meningocócica ACWY (por risco/exposição)"
+  rules:
+    - { field: "is_health_worker", op: "==", value: true }
+    - { field: "age", op: ">=", value: 11 }
+  schedule: "1 dose; reforço a cada 5 anos se risco persistir (ex.: serviço de pronto atendimento, surtos)."
+  refs:
+    - "SBIm 2025 — Meningocócicas (ocupacional)"
+  contraindications:
+    - "Anafilaxia a dose/componente."
+
+prof_saude_meningo_b:
+  label: "Profissional de Saúde — Meningocócica B (por risco/ausência de surto local: avaliar caso a caso)"
+  rules:
+    - { field: "is_health_worker", op: "==", value: true }
+    - { field: "age", op: ">=", value: 10 }
+  schedule: "2 doses com 1 mês de intervalo; considerar reforço 2–3 anos se risco mantido."
+  refs:
+    - "SBIm 2025 — Meningo B (ocupacional)"
+  contraindications:
+    - "Anafilaxia a dose/componente."
+
+
