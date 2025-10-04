@@ -15,6 +15,7 @@ def suggest_vaccines(patient: dict, rules: dict):
                 "schedule": vax.get("schedule", ""),
                 "refs": vax.get("refs", []),
                 "why": reasons,
-                "contraindications": vax.get("contraindications", []),  # 👈 novo
+                "contraindications": vax.get("contraindications", []),
             })
     return recs
+
