@@ -1,20 +1,17 @@
-from pydantic import BaseModel
-from typing import List, Literal
+# schemas/patient.py
+from dataclasses import dataclass
 
-class Patient(BaseModel):
+@dataclass
+class Patient:
     id: str
-    sex: Literal["M","F","I"]
+    sex: str            # "M" ou "F"
     age: int
-    comorbidities: List[str] = []
     is_health_worker: bool = False
 
-    # fatores/antecedentes
+    # HPP
     imc_ge_25: bool = False
     smoker_or_ex: bool = False
-    is_pregnant: bool = False  # 'gestante' no formulário
-    famhx_mama: bool = False
-    famhx_prostata: bool = False
-    famhx_colorretal: bool = False
+    is_pregnant: bool = False
     dm: bool = False
     dpoc: bool = False
     imunossuprimido: bool = False
@@ -22,22 +19,26 @@ class Patient(BaseModel):
     renal_cronica: bool = False
     hepatica_cronica: bool = False
     neoplasia_ativa: bool = False
-
-    # neurovascular (se em uso)
-    enxaqueca_refrataria: bool = False
     hipertensao_resistente: bool = False
-    dislipidemia_ldl_maior_190: bool = False
-    hbA1c_maior_7_5: bool = False
-    doencas_colageno: bool = False
+    dm_hba1c_maior_75: bool = False
     alcoolismo: bool = False
+    enxaqueca_refrataria: bool = False
+    ldl_maior_190: bool = False
+    doencas_colageno: bool = False
     uso_aco: bool = False
-    histfam_coronariana: bool = False
-    histfam_ateromatose_sist: bool = False
-    histfam_avc_isquemico: bool = False
-    histfam_aneurisma_intracraniano: bool = False
-
-    # AAA/aneurismas
-    histfam_aaa: bool = False
-    outro_aneurisma: bool = False
     transplantado: bool = False
+
+    # HF
+    famhx_mama: bool = False
+    famhx_prostata: bool = False
+    famhx_colorretal: bool = False
+    famhx_coronariana: bool = False
+    famhx_avc_isquemico: bool = False
+    famhx_aaa: bool = False
+    famhx_ateromatose: bool = False
+    famhx_an_intracraniano: bool = False
+    famhx_outro_aneurisma: bool = False
+
+    # Livre
+    free_text: str = ""
 
