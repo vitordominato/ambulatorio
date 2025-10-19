@@ -1,147 +1,52 @@
-# =========================================
-# VACINAS – conjunto base (funciona com AND)
-# Alinhado ao Patient: age, sex, is_health_worker, dpoc, dm, imunossuprimido etc.
-# =========================================
+# data/vaccines_rules.yaml
 
-dtpa_reforco:
-  label: "dTpa (Tríplice bacteriana acelular do adulto)"
-  rules:
-    - { field: "age", op: ">=", value: 10 }
-  schedule: "1 dose e reforços (dT) a cada 10 anos; em gestantes, 1 dose a cada gestação."
-  refs: ["SBIm – Adultos"]
-  contraindications: ["Anafilaxia prévia a componente/dose."]
+SCHEDULES:
+  HEPB_ADULTO_PADRAO:
+    doses: "3 doses (0, 1, 6 meses)"
+    observ: "Esquema acelerado em situações específicas; considerar anti-HBs pós-esquema em risco."
+  DTpa_REF:
+    doses: "Reforço a cada 10 anos (usar dTpa em gestantes: 1 dose por gestação)"
+    observ: "Rever calendário prévio; usar dT quando coqueluche não for prioridade."
+  INFLUENZA_ANUAL:
+    doses: "1 dose anual"
+    observ: "Preferir aplicação pré-sazonal; grupos de risco têm prioridade."
+  COVID19_REF:
+    doses: "Reforços conforme idade e risco"
+    observ: "Seguir nota técnica vigente (intervalos e produtos disponíveis)."
+  HPV_PADRAO:
+    doses: "2 ou 3 doses conforme idade/condição"
+    observ: "Checar elegibilidade etária/sexo e imunossupressão."
+  PNEUMO_RISCO:
+    doses: "Esquema sequencial conforme protocolo (ex.: PCV seguido de PPSV)"
+    observ: "Intervalos e número de doses variam por condição de risco."
+  DENGUE_QDENGA:
+    doses: "Conforme diretriz nacional vigente"
+    observ: "Respeitar faixas etárias elegíveis e histórico de infecção."
 
-hepatite_b_adulto:
-  label: "Hepatite B (adulto)"
-  rules:
-    - { field: "age", op: ">=", value: 18 }
-  schedule: "3 doses (0, 1 e 6 meses)."
-  refs: ["SBIm – Hepatite B"]
-  contraindications: ["Alergia grave a levedura/componentes."]
+VAX_META:
+  VAC_HEPB:              { priority: 90, sus_available: true,  contraindications: ["Anafilaxia a dose/componente"],             schedule_key: "HEPB_ADULTO_PADRAO" }
+  VAC_DTPA:              { priority: 70, sus_available: true,  contraindications: ["Anafilaxia/Encefalopatia pós-pertussis"],   schedule_key: "DTpa_REF" }
+  VAC_INFLUENZA:         { priority: 85, sus_available: true,  contraindications: ["Anafilaxia a dose anterior"],               schedule_key: "INFLUENZA_ANUAL" }
+  VAC_COVID19:           { priority: 95, sus_available: true,  contraindications: ["Anafilaxia a componente"],                  schedule_key: "COVID19_REF" }
+  VAC_MMR_VAR:           { priority: 60, sus_available: true,  contraindications: ["Gestação","Imunossupressão","Anafilaxia"],  schedule_key: null }
+  VAC_PNEUMO:            { priority: 80, sus_available: true,  contraindications: ["Anafilaxia"],                               schedule_key: "PNEUMO_RISCO" }
+  VAC_PNEUMO_IMUNO:      { priority: 92, sus_available: true,  contraindications: ["Anafilaxia"],                               schedule_key: "PNEUMO_RISCO" }
+  VAC_INFLUENZA_IMUNO:   { priority: 90, sus_available: true,  contraindications: ["Anafilaxia"],                               schedule_key: "INFLUENZA_ANUAL" }
+  VAC_COVID19_IMUNO:     { priority: 98, sus_available: true,  contraindications: ["Anafilaxia"],                               schedule_key: "COVID19_REF" }
+  VAC_HEPB_IMUNO:        { priority: 90, sus_available: true,  contraindications: ["Anafilaxia"],                               schedule_key: "HEPB_ADULTO_PADRAO" }
+  VAC_HPV:               { priority: 65, sus_available: true,  contraindications: ["Gestação (avaliar)"],                      schedule_key: "HPV_PADRAO" }
+  VAC_DENGUE:            { priority: 50, sus_available: true,  contraindications: ["Não elegível por idade/condição","Gestação (NT)"], schedule_key: "DENGUE_QDENGA" }
 
-influenza:
-  label: "Influenza (gripe)"
-  rules:
-    - { field: "age", op: ">=", value: 6 }
-  schedule: "1 dose anual (sazonal)."
-  refs: ["SBIm – Influenza"]
-  contraindications: ["Anafilaxia a dose anterior/ovo; adiar se febre."]
-
-covid19:
-  label: "COVID-19 (reforço anual)"
-  rules:
-    - { field: "age", op: ">=", value: 5 }
-  schedule: "1 reforço/ano (≥ 6 meses da última dose)."
-  refs: ["MS 2025 / SBIm"]
-  contraindications: ["Anafilaxia prévia; adiar em febre moderada/grave."]
-
-hpv_adulto:
-  label: "HPV"
-  rules:
-    - { field: "age", op: "range", value: [9, 45] }
-  schedule: "2 doses (0–6m) até 14 anos; ≥15 anos: 3 doses (0–2–6m)."
-  refs: ["SBIm – HPV"]
-  contraindications: ["Gestação (adiar)."]
-
-herpes_zoster:
-  label: "Herpes-zóster recombinante (HZ/su)"
-  rules:
-    - { field: "age", op: ">=", value: 50 }
-  schedule: "2 doses (2–6 meses)."
-  refs: ["SBIm – HZ/su"]
-  contraindications: ["Gestação; adiar em doença aguda."]
-
-pneumo_20_23:
-  label: "Pneumocócicas 20V + 23V (adulto)"
-  rules:
-    any_of:
-      - [ { field: "age", op: ">=", value: 60, reason: "≥60 anos" } ]
-      - [ { field: "dpoc", op: "==", value: true, reason: "DPOC" } ]
-      - [ { field: "dm", op: "==", value: true, reason: "DM" } ]
-      - [ { field: "imunossuprimido", op: "==", value: true, reason: "Imunossupressão" } ]
-      - [ { field: "renal_cronica", op: "==", value: true, reason: "DRC" } ]
-      - [ { field: "hepatica_cronica", op: "==", value: true, reason: "Doença hepática" } ]
-      - [ { field: "cardiovascular_cronica", op: "==", value: true, reason: "Doença cardiovascular" } ]
-  schedule: "1 dose 20V; 23V após 6–12 meses."
-  refs: ["SBIm – Pneumocócicas"]
-  contraindications: ["Anafilaxia a componentes."]
-
-dengue_tak003:
-  label: "Dengue (TAK-003)"
-  rules:
-    - { field: "age", op: "range", value: [4, 60] }
-  schedule: "2 doses com 3 meses de intervalo."
-  refs: ["MS/SBIm – Dengue"]
-  contraindications: ["Gestação e lactação; imunossupressão importante; adiar em febre."]
-
-# —— VSR (adulto) ——
-rsv_vacina:
-  label: "Vírus sincicial respiratório (VSR) — adulto"
-  rules:
-    - { field: "age", op: ">=", value: 60 }
-  schedule: "1 dose única (proteção ≈12 meses)."
-  refs: ["SBIm 2025 / ACIP"]
-  contraindications: ["Anafilaxia prévia; adiar em doença febril aguda."]
-
-rsv_abrysvo:
-  label: "VSR — Abrysvo (adulto)"
-  rules:
-    - { field: "age", op: ">=", value: 60 }
-  schedule: "1 dose única; pode coadministrar com Influenza/COVID em locais distintos."
-  refs: ["ACIP/SBIm — Abrysvo"]
-  contraindications: ["Anafilaxia; adiar em febre."]
-
-rsv_arexvy:
-  label: "VSR — Arexvy (adulto)"
-  rules:
-    - { field: "age", op: ">=", value: 60 }
-  schedule: "1 dose única; priorizar crônicos/imunossuprimidos."
-  refs: ["ACIP/SBIm — Arexvy"]
-  contraindications: ["Anafilaxia; adiar em febre."]
-
-# —— Ocupacionais (Profissionais de Saúde) ——
-prof_saude_dtpa:
-  label: "Profissional de Saúde — dTpa"
-  rules:
-    - { field: "is_health_worker", op: "==", value: true }
-    - { field: "age", op: ">=", value: 10 }
-  schedule: "1 dose agora se esquema incompleto; reforço (dT) a cada 10 anos."
-  refs: ["SBIm — Trabalhadores da saúde"]
-  contraindications: ["Anafilaxia; adiar em febre."]
-
-prof_saude_hepatite_b:
-  label: "Profissional de Saúde — Hepatite B"
-  rules:
-    - { field: "is_health_worker", op: "==", value: true }
-    - { field: "age", op: ">=", value: 18 }
-  schedule: "3 doses (0–1–6m); considerar anti-HBs 30–60 dias após 3ª dose."
-  refs: ["SBIm — Trabalhadores"]
-  contraindications: ["Alergia a levedura/componentes."]
-
-prof_saude_influenza:
-  label: "Profissional de Saúde — Influenza"
-  rules:
-    - { field: "is_health_worker", op: "==", value: true }
-    - { field: "age", op: ">=", value: 6 }
-  schedule: "1 dose anual."
-  refs: ["SBIm — Trabalhadores"]
-  contraindications: ["Anafilaxia a dose/ovo; adiar se febre."]
-
-prof_saude_mmr:
-  label: "Profissional de Saúde — Tríplice viral (MMR) (se não imune)"
-  rules:
-    - { field: "is_health_worker", op: "==", value: true }
-    - { field: "age", op: ">=", value: 10 }
-  schedule: "2 doses (≥30 dias entre si) se sem comprovação de imunidade."
-  refs: ["SBIm — Trabalhadores"]
-  contraindications: ["Gestantes; imunossupressão grave."]
-
-prof_saude_varicela:
-  label: "Profissional de Saúde — Varicela (se não imune)"
-  rules:
-    - { field: "is_health_worker", op: "==", value: true }
-    - { field: "age", op: ">=", value: 10 }
-  schedule: "2 doses (≥4 semanas) se sem histórico ou sorologia negativa."
-  refs: ["SBIm — Trabalhadores"]
-  contraindications: ["Gestantes; imunossupressão grave."]
+REFS_URLS:
+  MS_CAL_ADULTO_2024: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/data/pdfs/ms_calendario_adulto_2024.pdf"
+  MS_INFLUENZA_CAMPANHA: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/data/pdfs/ms_influenza.pdf"
+  MS_COVID19_REFORCOS_VIGENTE: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/data/pdfs/ms_covid_reforcos.pdf"
+  MS_PNEUMO_RISCO_VIGENTE: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/data/pdfs/ms_pneumo_risco.pdf"
+  MS_PNEUMO_IMUNO_VIGENTE: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/data/pdfs/ms_pneumo_imuno.pdf"
+  MS_HPV_VIGENTE: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/data/pdfs/ms_hpv.pdf"
+  MS_COVID19_IMUNO_VIGENTE: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/data/pdfs/ms_covid_imuno.pdf"
+  MS_DENGUE_QDENGA_VIGENTE: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/data/pdfs/ms_dengue_qdenga.pdf"
+  DIRETRIZ_AAA_VIGENTE: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/data/pdfs/aaa_rastreamento.pdf"
+  CONSENSO_HF_VIGENTE: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/data/pdfs/hipercolesterolemia_familiar.pdf"
+  DIRETRIZ_ACO_ENXAQUECA_VIGENTE: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/data/pdfs/aco_enxaqueca.pdf"
 
