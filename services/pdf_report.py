@@ -1,23 +1,29 @@
+# services/pdf_export.py
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
-from pathlib import Path
+from textwrap import wrap
 
-def export_recommendations(filename: str, header: str, lines: list[str]):
-    p = Path(filename)
-    c = canvas.Canvas(str(p), pagesize=A4)
-    width, height = A4
-    y = height - 50
+def export_plan_pdf(filename: str, cards: list[dict]):
+    c = canvas.Canvas(filename, pagesize=A4)
+    W, H = A4
+    x, y = 40, H - 60
     c.setFont("Helvetica-Bold", 14)
-    c.drawString(50, y, header)
+    c.drawString(x, y, "Assistente de Rastreio e Vacinação — Resumo")
     y -= 30
-    c.setFont("Helvetica", 11)
-    for line in lines:
-        c.drawString(50, y, f"- {line}")
-        y -= 18
-        if y < 80:
-            c.showPage()
-            y = height - 50
-            c.setFont("Helvetica", 11)
-    c.save()
-    return str(p)
+    c.setFont("Helvetica", 10)
 
+    for card in cards:
+        for label in ["title", "rationale", "action", "notes", "references"]:
+            text = f"{label.capitalize()}: {card.get(label, '')}".strip()
+            if not text: 
+                continue
+            lines = []
+            for ln in text.split("\n"):
+                lines += wrap(ln, width=95)
+            for ln in lines:
+                if y < 60:
+                    c.showPage(); y = H - 40; c.setFont("Helvetica", 10)
+                c.drawString(x, y, ln); y -= 14
+            y -= 10
+        y -= 10
+    c.showPage(); c.save()
