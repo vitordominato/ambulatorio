@@ -1,52 +1,197 @@
-# data/vaccines_rules.yaml
+vaccines_rules:
 
-SCHEDULES:
-  HEPB_ADULTO_PADRAO:
-    doses: "3 doses (0, 1, 6 meses)"
-    observ: "Esquema acelerado em situações específicas; considerar anti-HBs pós-esquema em risco."
-  DTpa_REF:
-    doses: "Reforço a cada 10 anos (usar dTpa em gestantes: 1 dose por gestação)"
-    observ: "Rever calendário prévio; usar dT quando coqueluche não for prioridade."
-  INFLUENZA_ANUAL:
-    doses: "1 dose anual"
-    observ: "Preferir aplicação pré-sazonal; grupos de risco têm prioridade."
-  COVID19_REF:
-    doses: "Reforços conforme idade e risco"
-    observ: "Seguir nota técnica vigente (intervalos e produtos disponíveis)."
-  HPV_PADRAO:
-    doses: "2 ou 3 doses conforme idade/condição"
-    observ: "Checar elegibilidade etária/sexo e imunossupressão."
-  PNEUMO_RISCO:
-    doses: "Esquema sequencial conforme protocolo (ex.: PCV seguido de PPSV)"
-    observ: "Intervalos e número de doses variam por condição de risco."
-  DENGUE_QDENGA:
-    doses: "Conforme diretriz nacional vigente"
-    observ: "Respeitar faixas etárias elegíveis e histórico de infecção."
+  # ===================== RESPIRATÓRIAS =====================
+  - id: vax_influenza
+    title: Influenza (anual)
+    condition: age >= 6 or is_health_worker or is_pregnant or dm or dpoc or cardiovascular_cronica or renal_cronica or hepatica_cronica or imunossuprimido
+    schedule:
+      - "Aplicar 1 dose anual (preferencialmente no início da sazonalidade)."
+      - "Crianças <9 anos sem histórico podem requerer 2 doses no primeiro ano (0 e 4 semanas)."
+    contraindications:
+      - "Hipersensibilidade grave (anafilaxia) a componentes da vacina."
+      - "Episódio de Síndrome de Guillain-Barré nas 6 semanas após dose prévia (avaliar risco/benefício)."
+    sus_available: "Sim"
+    references:
+      - "MS/PNI 2024–2025 – Influenza"
+      - "SBIm 2024 – Calendário de Adultos"
+    notes:
+      - "Indicar fortemente para gestantes e profissionais de saúde."
 
-VAX_META:
-  VAC_HEPB:              { priority: 90, sus_available: true,  contraindications: ["Anafilaxia a dose/componente"],             schedule_key: "HEPB_ADULTO_PADRAO" }
-  VAC_DTPA:              { priority: 70, sus_available: true,  contraindications: ["Anafilaxia/Encefalopatia pós-pertussis"],   schedule_key: "DTpa_REF" }
-  VAC_INFLUENZA:         { priority: 85, sus_available: true,  contraindications: ["Anafilaxia a dose anterior"],               schedule_key: "INFLUENZA_ANUAL" }
-  VAC_COVID19:           { priority: 95, sus_available: true,  contraindications: ["Anafilaxia a componente"],                  schedule_key: "COVID19_REF" }
-  VAC_MMR_VAR:           { priority: 60, sus_available: true,  contraindications: ["Gestação","Imunossupressão","Anafilaxia"],  schedule_key: null }
-  VAC_PNEUMO:            { priority: 80, sus_available: true,  contraindications: ["Anafilaxia"],                               schedule_key: "PNEUMO_RISCO" }
-  VAC_PNEUMO_IMUNO:      { priority: 92, sus_available: true,  contraindications: ["Anafilaxia"],                               schedule_key: "PNEUMO_RISCO" }
-  VAC_INFLUENZA_IMUNO:   { priority: 90, sus_available: true,  contraindications: ["Anafilaxia"],                               schedule_key: "INFLUENZA_ANUAL" }
-  VAC_COVID19_IMUNO:     { priority: 98, sus_available: true,  contraindications: ["Anafilaxia"],                               schedule_key: "COVID19_REF" }
-  VAC_HEPB_IMUNO:        { priority: 90, sus_available: true,  contraindications: ["Anafilaxia"],                               schedule_key: "HEPB_ADULTO_PADRAO" }
-  VAC_HPV:               { priority: 65, sus_available: true,  contraindications: ["Gestação (avaliar)"],                      schedule_key: "HPV_PADRAO" }
-  VAC_DENGUE:            { priority: 50, sus_available: true,  contraindications: ["Não elegível por idade/condição","Gestação (NT)"], schedule_key: "DENGUE_QDENGA" }
+  - id: vax_pneumococica_adulto
+    title: Pneumocócica (PCV20 OU PCV13→PPSV23)
+    condition: age >= 60 or dm or dpoc or cardiovascular_cronica or renal_cronica or hepatica_cronica or imunossuprimido or smoker_or_ex
+    schedule:
+      - "Opção A: **PCV20** – dose única."
+      - "Opção B (alternativa): **PCV13** dose única, seguida de **PPSV23** após 6–12 meses."
+      - "Em imunossuprimidos e alto risco, considerar reforço de PPSV23 conforme diretrizes."
+    contraindications:
+      - "Hipersensibilidade grave a componentes das vacinas."
+    sus_available: "Parcial"
+    references:
+      - "SBIm 2024 – Pneumocócicas em adultos"
+      - "MS/PNI 2024–2025"
+    notes:
+      - "Fumar aumenta risco pneumocócico; considerar mesmo <60 anos com tabagismo."
 
-REFS_URLS:
-  MS_CAL_ADULTO_2024: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/data/pdfs/ms_calendario_adulto_2024.pdf"
-  MS_INFLUENZA_CAMPANHA: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/data/pdfs/ms_influenza.pdf"
-  MS_COVID19_REFORCOS_VIGENTE: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/data/pdfs/ms_covid_reforcos.pdf"
-  MS_PNEUMO_RISCO_VIGENTE: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/data/pdfs/ms_pneumo_risco.pdf"
-  MS_PNEUMO_IMUNO_VIGENTE: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/data/pdfs/ms_pneumo_imuno.pdf"
-  MS_HPV_VIGENTE: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/data/pdfs/ms_hpv.pdf"
-  MS_COVID19_IMUNO_VIGENTE: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/data/pdfs/ms_covid_imuno.pdf"
-  MS_DENGUE_QDENGA_VIGENTE: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/data/pdfs/ms_dengue_qdenga.pdf"
-  DIRETRIZ_AAA_VIGENTE: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/data/pdfs/aaa_rastreamento.pdf"
-  CONSENSO_HF_VIGENTE: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/data/pdfs/hipercolesterolemia_familiar.pdf"
-  DIRETRIZ_ACO_ENXAQUECA_VIGENTE: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/data/pdfs/aco_enxaqueca.pdf"
+  - id: vax_covid_adulto
+    title: COVID-19 (reforços)
+    condition: age >= 12 or is_pregnant or is_health_worker or dm or dpoc or cardiovascular_cronica or renal_cronica or hepatica_cronica or imunossuprimido
+    schedule:
+      - "Reforço periódico conforme faixa etária e risco (1x/ano para grupos de risco, conforme MS vigente)."
+    contraindications:
+      - "Reação anafilática a dose prévia ou componente da vacina."
+    sus_available: "Sim"
+    references:
+      - "MS/PNI 2024–2025 – COVID-19"
+      - "SBIm 2024 – Recomendações COVID-19"
+    notes:
+      - "Gestantes e profissionais de saúde: priorizar esquema atualizado."
 
+  # ===================== DTP/TÉTANO/COQUELUCHE =====================
+  - id: vax_dtpa_tetano
+    title: dTpa (coqueluche, difteria, tétano) e Td (reforço)
+    condition: age >= 12
+    schedule:
+      - "Aplicar **1 dose de dTpa** em adulto que nunca recebeu; depois **reforço com Td** a cada 10 anos."
+      - "Gestantes: **1 dose de dTpa em cada gestação**, a partir de 20 semanas (ideal 27–36s)."
+    contraindications:
+      - "Anafilaxia prévia a componente."
+      - "Doença febril moderada a grave: adiar."
+    sus_available: "Sim"
+    references:
+      - "MS/PNI 2024–2025 – dTpa/Td"
+      - "SBIm 2024 – Adultos e Gestantes"
+    notes:
+      - "Profissionais de saúde devem manter reforços em dia."
+
+  # ===================== VIRAIS (TRÍPLICE, VARICELA, HPV) =====================
+  - id: vax_mmr
+    title: Tríplice viral (sarampo, caxumba, rubéola)
+    condition: age >= 12 and not imunossuprimido and not is_pregnant
+    schedule:
+      - "Sem comprovação vacinal: **2 doses** com intervalo mínimo de 4 semanas (nascidos ≥1960)."
+    contraindications:
+      - "Gestação."
+      - "Imunossupressão importante."
+      - "Alergia grave a neomicina/gelatina."
+    sus_available: "Sim"
+    references:
+      - "MS/PNI 2024–2025 – SCR"
+      - "SBIm 2024 – Calendário Adulto"
+    notes:
+      - "Em profissionais de saúde, garantir 2 doses documentadas."
+
+  - id: vax_varicela
+    title: Varicela
+    condition: age >= 12 and not imunossuprimido and not is_pregnant
+    schedule:
+      - "Sem história/vacinação prévia: **2 doses** (0 e 4–8 semanas)."
+    contraindications:
+      - "Gestação."
+      - "Imunossupressão importante."
+    sus_available: "Parcial"
+    references:
+      - "SBIm 2024 – Varicela em adultos"
+      - "MS/PNI – disponibilidade local"
+    notes:
+      - "Profissionais de saúde sem comprovação: fortemente recomendado."
+
+  - id: vax_hpv
+    title: HPV
+    condition: (age >= 9 and age <= 19) or imunossuprimido
+    schedule:
+      - "9–14 anos: **2 doses** (0 e 6–12 meses)."
+      - "≥15 anos e imunossuprimidos: **3 doses** (0, 1–2, 6 meses)."
+    contraindications:
+      - "Gestação (adiar)."
+      - "Anafilaxia prévia."
+    sus_available: "Sim"
+    references:
+      - "MS/PNI 2024–2025 – HPV"
+      - "SBIm 2024 – HPV"
+    notes:
+      - "Considerar ampliação etária conforme risco individual e disponibilidade local."
+
+  # ===================== HEPATITES =====================
+  - id: vax_hepatite_b
+    title: Hepatite B
+    condition: age >= 12
+    schedule:
+      - "Esquema **3 doses**: 0, 1 e 6 meses."
+      - "Esquema acelerado pode ser usado em situações específicas."
+    contraindications:
+      - "Anafilaxia a componente (ex.: leveduras)."
+    sus_available: "Sim"
+    references:
+      - "MS/PNI 2024–2025 – Hepatite B"
+      - "SBIm 2024 – Adultos"
+    notes:
+      - "Profissionais de saúde devem comprovar esquema completo e sorologia quando aplicável."
+
+  - id: vax_hepatite_a
+    title: Hepatite A
+    condition: hepatica_cronica or imunossuprimido
+    schedule:
+      - "Adultos suscetíveis: **2 doses** (0 e 6–12 meses)."
+    contraindications:
+      - "Anafilaxia a componente."
+    sus_available: "Variável"
+    references:
+      - "SBIm 2024 – Hepatite A em adultos"
+      - "MS/PNI – disponibilidade local"
+    notes:
+      - "Útil em hepatopatas crônicos, contatos e surtos."
+
+  # ===================== DENGUE =====================
+  - id: vax_dengue
+    title: Dengue (TAK-003/Qdenga®)
+    condition: age >= 6 and age <= 60 and not is_pregnant and not imunossuprimido
+    schedule:
+      - "**2 doses**: 0 e 3 meses."
+      - "Verificar elegibilidade local (faixas etárias e critérios podem variar conforme MS/PNI vigente)."
+    contraindications:
+      - "Gestação."
+      - "Imunossupressão importante."
+      - "Anafilaxia a componente."
+    sus_available: "Variável"
+    references:
+      - "MS/PNI 2024–2025 – Dengue (TAK-003)"
+      - "SBIm 2024 – Dengue"
+    notes:
+      - "Recomendar após avaliação individual e normativa municipal/estadual."
+
+  # ===================== OUTROS CONTEXTOS (TRABALHO/GRUPOS ESPECIAIS) =====================
+  - id: vax_bundle_prof_saude
+    title: Conjunto mínimo – Profissional de Saúde
+    condition: is_health_worker
+    schedule:
+      - "Influenza anual."
+      - "Hepatite B (3 doses, 0-1-6; checar anti-HBs)."
+      - "dTpa (1 dose) + Td a cada 10 anos."
+      - "Tríplice viral (2 doses documentadas)."
+      - "Varicela (2 doses) se suscetível."
+    contraindications:
+      - "Respeitar contraindicações específicas de cada vacina do conjunto."
+    sus_available: "Sim"
+    references:
+      - "MS/PNI 2024–2025 – Recomendações profissionais de saúde"
+      - "SBIm 2024 – Trabalhadores da saúde"
+    notes:
+      - "Usar esta lista como checklist rápido; as vacinas individuais acima detalham esquemas."
+
+  # ===================== GESTAÇÃO =====================
+  - id: vax_bundle_gestante
+    title: Conjunto mínimo – Gestante
+    condition: is_pregnant
+    schedule:
+      - "dTpa: 1 dose em **cada gestação** (ideal 27–36 semanas)."
+      - "Influenza: 1 dose em qualquer trimestre (sazonal)."
+      - "Hepatite B: completar esquema se suscetível (0-1-6)."
+    contraindications:
+      - "Vacinas vivas atenuadas são contraindicadas na gestação (ex.: MMR, Varicela, Dengue TAK-003)."
+    sus_available: "Sim"
+    references:
+      - "MS/PNI 2024–2025 – Gestantes"
+      - "SBIm 2024 – Gestantes"
+    notes:
+      - "Avaliar necessidade de outras vacinas conforme risco ocupacional/epidemiológico."
