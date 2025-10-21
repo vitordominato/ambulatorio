@@ -1,79 +1,202 @@
+# -*- coding: utf-8 -*-
 # pages/3_💉_Vacinas.py
+
+from __future__ import annotations
+import os
+import yaml
+import pandas as pd
 import streamlit as st
-from uuid import uuid4
-from schemas.patient import Patient
-from services.rules_engine import RulesEngine, render_recommendation
-from components.reco_card import show_reco_card
 
-st.set_page_config(page_title="Vacinas", page_icon="💉", layout="wide")
-st.title("Assistente de Rastreamento e Vacinação")
+# --- Imports opcionais dos componentes (blindados) ---
+try:
+    from components.reco_card import show_reco_card
+    _RECO_OK = True
+except Exception:
+    _RECO_OK = False
 
-# ------------------ Formulário (resumo) ------------------
-sexo_label = st.selectbox("Sexo biológico", ["Masculino", "Feminino"])
-sexo = "M" if sexo_label == "Masculino" else "F"
-idade = st.number_input("Idade", min_value=0, max_value=120, value=30, step=1)
-prof_saude = st.checkbox("Profissional de Saúde")
+try:
+    from components.pdf_viewer import show_pdf
+    _PDF_OK = True
+except Exception:
+    _PDF_OK = False
 
-st.subheader("🧍 Histórico Patológico Pregresso (HPP)")
-c1, c2 = st.columns(2)
-with c1:
-    imc_ge_25 = st.checkbox("IMC ≥ 25")
-    gestante = st.checkbox("Gestante") if sexo == "F" else False
-    dm = st.checkbox("Diabetes Mellitus")
-    imunossuprimido = st.checkbox("Imunossuprimido")
-    renal = st.checkbox("Doença renal crônica")
-    neoplasia = st.checkbox("Neoplasia ativa")
-    har = st.checkbox("Hipertensão arterial resistente (≥3 drogas)")
-    dm_hba1c = st.checkbox("Diabetes (HbA1c > 7,5%)")
-    alcool = st.checkbox("Alcoolismo")
-with c2:
-    tabagista = st.checkbox("Tabagista ou ex-tabagista")
-    dpoc = st.checkbox("DPOC")
-    cardio = st.checkbox("Doença cardiovascular crônica")
-    hepatica = st.checkbox("Doença hepática crônica")
-    enxaq = st.checkbox("Cefaleia tipo migranosa refratária")
-    ldl190 = st.checkbox("Dislipidemia (LDL ≥ 190 mg/dL)")
-    colageno = st.checkbox("Doenças do colágeno/tecido conectivo")
-    uso_aco = st.checkbox("Uso de contraceptivo oral")
-    txp = st.checkbox("Paciente transplantado (qualquer órgão)")
+st.title("💉 Vacinas")
 
-st.subheader("👨‍👩‍👧‍👦 Histórico Familiar (HF)")
-c3, c4 = st.columns(2)
-with c3:
-    hf_prostata = st.checkbox("Histórico familiar de câncer de próstata")
-    hf_coronaria = st.checkbox("Hist. familiar de doença coronariana")
-    hf_avc = st.checkbox("Hist. familiar de AVC isquêmico")
-    hf_aaa = st.checkbox("Hist. familiar de AAA")
-with c4:
-    hf_mama = st.checkbox("Histórico familiar de câncer de mama")
-    hf_colorretal = st.checkbox("Histórico familiar de câncer colorretal")
-    hf_ateromatose = st.checkbox("Hist. familiar de ateromatose sistêmica")
-    hf_an_intra = st.checkbox("Hist. familiar de aneurisma intracraniano")
-    hf_outro_an = st.checkbox("Outro aneurisma arterial conhecido (fam.)")
+# ---------------------------------------------------------------------
+# Utilitários
+# ---------------------------------------------------------------------
+DATA_DIR = "data"
+VAX_RULES_PATH = os.path.join(DATA_DIR, "vaccines_rules.yaml")
+PDFS_INDEX_PATH = os.path.join(DATA_DIR, "pdfs_index.csv")
 
-# ------------------ Construção do Patient ------------------
-paciente = Patient(
-    id=str(uuid4()), sex=sexo, age=idade, is_health_worker=prof_saude,
-    imc_ge_25=imc_ge_25, smoker_or_ex=tabagista, is_pregnant=gestante,
-    dm=dm, dpoc=dpoc, imunossuprimido=imunossuprimido, cardiovascular_cronica=cardio,
-    renal_cronica=renal, hepatica_cronica=hepatica, neoplasia_ativa=neoplasia,
-    hipertensao_resistente=har, dm_hba1c_maior_75=dm_hba1c, alcoolismo=alcool,
-    enxaqueca_refrataria=enxaq, ldl_maior_190=ldl190, doencas_colageno=colageno,
-    uso_aco=uso_aco, transplantado=txp,
-    famhx_mama=hf_mama, famhx_prostata=hf_prostata, famhx_colorretal=hf_colorretal,
-    famhx_coronariana=hf_coronaria, famhx_avc_isquemico=hf_avc, famhx_aaa=hf_aaa,
-    famhx_ateromatose=hf_ateromatose, famhx_an_intracraniano=hf_an_intra, famhx_outro_aneurisma=hf_outro_an,
-)
+def load_yaml(path: str) -> dict | list | None:
+    if not os.path.isfile(path):
+        return None
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return yaml.safe_load(f)
+    except Exception as e:
+        st.error(f"Falha ao ler YAML `{path}`: {e}")
+        return None
 
-# ------------------ Engine ------------------
-engine = RulesEngine()
-out = engine.evaluate(paciente)
+def load_csv(path: str) -> pd.DataFrame | None:
+    if not os.path.isfile(path):
+        return None
+    try:
+        return pd.read_csv(path, encoding="utf-8")
+    except Exception as e:
+        st.error(f"Falha ao ler CSV `{path}`: {e}")
+        return None
 
-# ------------------ Render ------------------
-if out.recommendations:
-    st.success("Plano sugerido (ordenado por prioridade). O primeiro card é o ponto de partida.")
-    for i, rec in enumerate(out.recommendations):
-        card = render_recommendation(rec, highlight=(i == 0))
-        show_reco_card(card)
+def build_context() -> dict:
+    """Cria o 'contexto' para avaliar condições de regras (age, sex e fatores booleanos)."""
+    patient = st.session_state.get("patient", {})
+    # saneamento básico
+    sex = patient.get("sex", "M")
+    if sex not in ("M", "F"):
+        sex = "M"
+    ctx = {"age": int(patient.get("age", 0) or 0), "sex": sex}
+
+    # adiciona todos os booleanos do dict do paciente ao contexto
+    for k, v in patient.items():
+        if isinstance(v, bool):
+            ctx[k] = v
+    return ctx
+
+def eval_condition(expr: str | float | int | None, ctx: dict) -> bool:
+    """Avalia a expressão booleana de forma restrita ao contexto fornecido."""
+    if expr is None:
+        return True
+    if isinstance(expr, (int, float)):
+        return bool(expr)
+    if isinstance(expr, str):
+        e = expr.strip()
+        if not e:
+            return True
+        try:
+            # Somente variáveis do ctx, sem builtins.
+            return bool(eval(e, {"__builtins__": None}, ctx))
+        except Exception:
+            # condição inválida -> considera falso para segurança
+            return False
+    return False
+
+def as_list(x):
+    if x is None:
+        return []
+    if isinstance(x, (list, tuple)):
+        return list(x)
+    return [x]
+
+# ---------------------------------------------------------------------
+# Carregamento dos dados
+# ---------------------------------------------------------------------
+ctx = build_context()
+
+data = load_yaml(VAX_RULES_PATH)
+if not data or "vaccines_rules" not in data:
+    st.info("Regras de vacinas não encontradas. Verifique `data/vaccines_rules.yaml`.")
+    data = {"vaccines_rules": []}
+
+df_pdfs = load_csv(PDFS_INDEX_PATH)
+if df_pdfs is None:
+    df_pdfs = pd.DataFrame(columns=["id", "title", "category", "path_local", "url_remote", "tags", "condition"])
+
+# ---------------------------------------------------------------------
+# Recomendações de Vacinas
+# ---------------------------------------------------------------------
+st.subheader("Recomendações")
+
+rules = data.get("vaccines_rules", [])
+valid_rules = []
+for rule in rules:
+    cond = rule.get("condition")
+    if eval_condition(cond, ctx):
+        valid_rules.append(rule)
+
+if not valid_rules:
+    st.warning("Nenhuma recomendação encontrada para o perfil atual. Ajuste os dados no **Cadastro do Paciente**.")
 else:
-    st.info(out.no_recommendation_message or "Sem recomendações específicas no momento.")
+    if not _RECO_OK:
+        st.info("Componente visual de recomendação indisponível. Exibindo versão simples.")
+    for i, rule in enumerate(valid_rules, start=1):
+        title = rule.get("title", f"Recomendação {i}")
+        schedule = as_list(rule.get("schedule"))
+        notes = as_list(rule.get("notes"))
+        contraind = as_list(rule.get("contraindications"))
+        refs = as_list(rule.get("references"))
+
+        # monta um texto mais clínico para o cartão
+        action_text = []
+        if schedule:
+            action_text.extend(schedule)
+        if contraind:
+            action_text.append("**Contraindicações**")
+            action_text.extend([f"- {c}" for c in contraind])
+
+        if _RECO_OK:
+            show_reco_card({
+                "title": title,
+                "rationale": rule.get("description", ""),
+                "action": action_text,
+                "notes": notes,
+                "references": refs
+            }, key_prefix=f"vax_{i}")
+        else:
+            # fallback simples
+            st.markdown(f"### {title}")
+            if rule.get("description"):
+                st.caption(rule["description"])
+            if action_text:
+                st.markdown("\n".join([f"- {line}" if not line.startswith("**") else line for line in action_text]))
+            if notes:
+                with st.expander("Observações"):
+                    st.markdown("\n".join([f"- {n}" for n in notes]))
+            if refs:
+                with st.expander("📚 Referências"):
+                    st.markdown("\n".join([f"- {r}" for r in refs]))
+            st.divider()
+
+# ---------------------------------------------------------------------
+# PDFs relacionados a Vacinas (condicionais)
+# ---------------------------------------------------------------------
+st.subheader("Documentos úteis (Vacinas)")
+
+if df_pdfs.empty:
+    st.caption("Nenhum índice de PDFs encontrado em `data/pdfs_index.csv`.")
+else:
+    # Mantém apenas categoria Vacinas (ou diretrizes de imunização, se desejar inclua 'Diretriz')
+    sub = df_pdfs[df_pdfs["category"].fillna("").str.lower().isin(["vacinas"])]
+    if sub.empty:
+        st.caption("Não há itens de categoria 'Vacinas' no índice de PDFs.")
+    else:
+        any_shown = False
+        for _, row in sub.iterrows():
+            cond_expr = str(row.get("condition") or "").strip()
+            ok = eval_condition(cond_expr, ctx)
+            if not ok:
+                continue
+            any_shown = True
+            title = row.get("title", "Documento")
+            path_local = row.get("path_local") or ""
+            url_remote = row.get("url_remote") or ""
+
+            if _PDF_OK:
+                show_pdf(
+                    title=title,
+                    local_path=path_local if path_local else None,
+                    url=url_remote if url_remote else None,
+                    embed=False,
+                    key=f"pdf_{row.get('id','')}"
+                )
+            else:
+                # fallback: apenas links/avisos
+                st.markdown(f"**{title}**")
+                if path_local and os.path.isfile(path_local):
+                    st.caption(f"• Arquivo local: `{path_local}` (download disponível na aba Biblioteca de PDFs).")
+                if url_remote:
+                    st.markdown(f"[Abrir online]({url_remote})")
+                st.divider()
+
+        if not any_shown:
+            st.caption("Nenhum documento de vacinas se aplica ao perfil atual.")
