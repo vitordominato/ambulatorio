@@ -1,118 +1,102 @@
-# data/screening_rules.yaml
+screening_rules:
 
-# MAMA
-mammography_women_40_74:
-  label: "Mamografia (rastreamento)"
-  rules:
-    - { field: "sex", op: "==", value: "F", reason: "Sexo feminino" }
-    - { field: "age", op: "range", value: [40, 74], reason: "40–74 anos" }
-  guidance: "Mamografia anual/bienal conforme risco e diretriz vigente."
-  link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/cancer%20mama%20rastreo.pdf"
+  # ---- DIABETES / METABÓLICO ----
+  - id: rastreio_diabetes
+    title: Rastreamento de Diabetes Mellitus
+    description: Glicemia de jejum e/ou HbA1c conforme fatores de risco.
+    condition: imc_ge_25 or hipertensao_resistente or dislipidemia_ldl190
+    actions:
+      - Solicitar glicemia de jejum e HbA1c anual.
+      - Considerar TOTG se glicemia limítrofe.
+    references:
+      - "Ministério da Saúde, Protocolo de Rastreamento de DM, 2022"
+      - "USPSTF 2021 – Screening for Prediabetes and Type 2 Diabetes"
 
-# COLO UTERINO
-cervical_cancer_25_65:
-  label: "Rastreamento de colo uterino (citologia/HPV)"
-  rules:
-    - { field: "sex", op: "==", value: "F", reason: "Sexo feminino" }
-    - { field: "age", op: "range", value: [25, 65], reason: "25–65 anos" }
-  guidance: "Citologia/HPV conforme periodicidade do protocolo local."
-  link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/diretrizes_para_o_rastreamento_do_cancer_do_colo_do_utero_2016_corrigido.pdf"
+  # ---- LIPÍDIOS ----
+  - id: rastreio_dislipidemia
+    title: Rastreamento de Dislipidemia
+    description: Avaliação de perfil lipídico para prevenção cardiovascular primária.
+    condition: cardiovascular_cronica or dm or imc_ge_25 or smoker_or_ex
+    actions:
+      - Solicitar perfil lipídico (TC, HDL, LDL, TG) a cada 5 anos, ou anual se fatores de risco múltiplos.
+      - Ajustar metas conforme risco global.
+    references:
+      - "SBPC/ML, Diretrizes Lipidológicas 2023"
+      - "ACC/AHA Cholesterol Guidelines 2019"
 
-# PRÓSTATA
-psa_prostate_general_50plus:
-  label: "Rastreio de próstata (PSA ± toque)"
-  rules:
-    - { field: "sex", op: "==", value: "M", reason: "Sexo masculino" }
-    - { field: "age", op: ">=", value: 50, reason: "≥50 anos" }
-  guidance: "Avaliar PSA e discussão compartilhada de rastreio."
-  link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/rastreamento_prostat_2023_sociedades.pdf"
+  # ---- NEOPLASIAS ----
+  - id: rastreio_mama
+    title: Rastreamento de Câncer de Mama
+    description: Mamografia de rastreamento conforme faixa etária e risco.
+    condition: sex == "F" and age >= 40
+    actions:
+      - Solicitar mamografia a cada 2 anos (40–74 anos).
+      - Antecipar se histórico familiar (famhx_mama).
+    references:
+      - "MS, Diretrizes Diagnóstico e Rastreamento de Câncer de Mama, 2022"
+      - "USPSTF 2024 – Breast Cancer Screening"
 
-psa_prostate_famhx_45plus:
-  label: "Rastreio de próstata antecipado (história familiar)"
-  rules:
-    - { field: "sex", op: "==", value: "M", reason: "Sexo masculino" }
-    - { field: "famhx_prostata", op: "==", value: true, reason: "Histórico familiar de câncer de próstata" }
-    - { field: "age", op: ">=", value: 45, reason: "≥45 anos" }
-  guidance: "Iniciar rastreio antecipado conforme diretriz e preferência do paciente."
-  link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/rastreamento_prostat_2023_sociedades.pdf"
+  - id: rastreio_prostata
+    title: Rastreamento de Câncer de Próstata
+    description: Discussão individualizada sobre PSA.
+    condition: sex == "M" and age >= 50
+    actions:
+      - Avaliar PSA anual após decisão compartilhada médico-paciente.
+      - Antecipar para 45 anos se histórico familiar (famhx_prostata).
+    references:
+      - "SBUR/SBU Diretriz 2023"
+      - "USPSTF 2018 – Prostate Cancer Screening"
 
-# COLORRETAL – familiar
-crc_colonoscopy_famhx_40plus:
-  label: "Colonoscopia antecipada (história familiar colorretal)"
-  rules:
-    - { field: "famhx_colorretal", op: "==", value: true, reason: "Histórico familiar de câncer colorretal" }
-    - { field: "age", op: ">=", value: 40, reason: "≥40 anos (ou 10 anos antes do familiar)" }
-  guidance: "Colonoscopia antecipada por risco familiar."
-  link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/C%C3%82NCER%20COLORRETAL_DO%20DIAGN%C3%93STICO%20AO%20TRATAMENTO.pdf"
+  - id: rastreio_colorretal
+    title: Rastreamento de Câncer Colorretal
+    description: Pesquisa de sangue oculto ou colonoscopia conforme risco.
+    condition: age >= 45
+    actions:
+      - Oferecer PSOF anual ou colonoscopia a cada 10 anos.
+      - Antecipar se histórico familiar (famhx_colorretal).
+    references:
+      - "INCA, Diretriz de Rastreamento de CCR, 2022"
+      - "USPSTF 2021 – Colorectal Cancer Screening"
 
-# LDCT – tabagismo ativo/ex
-ldct_smokers_50_80:
-  label: "TC de tórax de baixa dose (tabagista ou ex-tabagista)"
-  rules:
-    - { field: "age", op: "range", value: [50, 80], reason: "50–80 anos" }
-    - { field: "smoker_or_ex", op: "==", value: true, reason: "Tabagismo atual ou pregresso" }
-  guidance: "LDCT anual conforme protocolo institucional."
-  link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/tabagismo%20ca%20pulmao.pdf"
+  # ---- PULMONAR / TABAGISMO ----
+  - id: rastreio_cancer_pulmao
+    title: Rastreamento de Câncer de Pulmão
+    description: Tomografia de baixa dose para tabagistas ou ex-tabagistas.
+    condition: smoker_or_ex and age >= 50
+    actions:
+      - Considerar TC de baixa dose anual se ≥20 maços/ano e cessou há <15 anos.
+    references:
+      - "SBPT, Rastreamento de Câncer de Pulmão, 2023"
+      - "NLST Trial, NEJM 2011"
 
-# LDCT – tabagismo passivo >50 (pedido seu)
-ldct_passive_over50:
-  label: "TC de tórax de baixa dose (tabagismo passivo)"
-  rules:
-    - { field: "age", op: ">", value: 50, reason: ">50 anos" }
-    - { field: "smoking_status", op: "==", value: "Passivo", reason: "Tabagismo passivo" }
-  guidance: "Considerar LDCT anual para exposição passiva ao tabaco acima de 50 anos, conforme protocolo institucional."
-  link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/tabagismo%20ca%20pulmao.pdf"
+  - id: protocolo_cardiologico_tabagismo
+    title: Protocolo de Atendimento Ambulatorial Cardiológico – Tabagismo
+    description: Avaliação de risco cardiovascular e prevenção secundária em tabagistas.
+    condition: smoker_or_ex
+    actions:
+      - Ativar exibição automática do PDF de protocolo cardiológico.
+      - Avaliar PA, perfil lipídico e glicemia.
+    references:
+      - "Protocolo interno – CHN 2025"
 
-# METABÓLICO
-metabolic_screen_imc:
-  label: "Avaliação metabólica (IMC ≥25)"
-  rules:
-    - { field: "imc_ge_25", op: "==", value: true, reason: "IMC ≥25" }
-  guidance: "Avaliação metabólica e tratamento conforme diretrizes."
-  link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/Diretrizes-Brasileiras-de-Obesidade-2016.pdf"
+  # ---- HEPÁTICO / IMUNIZAÇÃO ----
+  - id: rastreio_hepatico
+    title: Rastreamento de Doença Hepática Crônica
+    description: Avaliação de enzimas hepáticas em pacientes de risco.
+    condition: hepatica_cronica or alcoolismo
+    actions:
+      - Solicitar TGO, TGP e USG abdominal conforme histórico clínico.
+    references:
+      - "SBH 2023 – Diretrizes Hepáticas"
+      - "MS 2022 – Rastreamento Hepatites Virais"
 
-# MGUS / Gamopatias
-mgus_over50:
-  label: "Avaliação para gamopatias monoclonais"
-  rules:
-    - { field: "age", op: ">=", value: 50, reason: "≥50 anos" }
-  guidance: "Solicitar eletroforese de proteínas."
-  link_pdf: "https://raw.githubusercontent.com/vitordominato/ambulatorio/main/Gamopatias_monoclonais_criterios_diagnosticos.pdf"
-
-# AAA (Aorta Abdominal) – critérios principais
-aaa_ultrasound_primary:
-  label: "USG de aorta abdominal (rastreamento de AAA)"
-  rules:
-    - { field: "age", op: ">=", value: 65, reason: "≥65 anos" }
-    - { fields: ["smoker_or_ex","histfam_aaa","outro_aneurisma","transplantado"], op: ">=", value: 1, reason: "Fator de alto risco presente" }
-  guidance: "Solicitar USG de aorta/ilíacas; encaminhar ao Vascular se aneurisma."
-  link_pdf: ""  # você vai subir o PDF 'Rastreamento AAA' no GitHub; pode colar o link raw aqui depois.
-
-# TRIAGEM NEUROVASCULAR – ≥3 fatores
-neurovascular_triage_3plus:
-  label: "Triagem de doenças neurovasculares (≥3 fatores)"
-  rules:
-    - { fields: [
-          "sex_feminino",
-          "idade_maior_40",
-          "enxaqueca_refrataria",
-          "hipertensao_resistente",
-          "dislipidemia_ldl_maior_190",
-          "hbA1c_maior_7_5",
-          "cardiovascular_cronica",
-          "doencas_colageno",
-          "smoker_or_ex",
-          "alcoolismo",
-          "uso_aco",
-          "histfam_coronariana",
-          "histfam_ateromatose_sist",
-          "histfam_avc_isquemico",
-          "histfam_aneurisma_intracraniano"
-        ],
-        op: ">=",
-        value: 3,
-        reason: "≥3 fatores de risco"
-      }
-  guidance: "Solicitar AngioTC de crânio/vasos cervicais (ou AngioRM TOF se DRC)."
-  link_pdf: ""  # cole aqui o raw do PDF 'Triagem Doenças Neurovasculares' quando subir
-
+  # ---- NEUROLÓGICO / VASCULAR ----
+  - id: rastreio_aneurismas
+    title: Rastreamento de Aneurismas Arteriais
+    description: USG abdominal para AAA e avaliação familiar.
+    condition: hist_aaa or hist_intracr
+    actions:
+      - Solicitar USG abdominal se histórico familiar de AAA.
+      - Considerar angioRM/angioTC se familiar de aneurisma intracraniano.
+    references:
+      - "SVB, Diretriz de Doença Aneurismática, 2021"
