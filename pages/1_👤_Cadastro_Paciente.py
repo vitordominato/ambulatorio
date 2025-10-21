@@ -1,75 +1,55 @@
 import streamlit as st
-from schemas.patient import Patient
-import uuid, yaml
 
-st.title("👤 Cadastro do Paciente")
+st.markdown("### 🩺 Fatores clínicos e antecedentes")
 
-# carrega fatores do YAML
-FACTS = yaml.safe_load(open("data/factors.yaml","r",encoding="utf-8"))["fatores"]
+# cria duas colunas bem equilibradas
+col_esq, col_dir = st.columns(2)
 
-with st.form("patient_form"):
-    sex = st.selectbox("Sexo biológico", ["M", "F", "I"], index=2)
-    age = st.number_input("Idade", min_value=0, max_value=120, step=1)
-    is_health_worker = st.checkbox("Profissional de Saúde")
+with col_esq:
+    imc_ge_25 = st.checkbox("IMC ≥ 25", value=st.session_state["patient"].get("imc_ge_25", False))
+    gestante = st.checkbox("Gestante", value=st.session_state["patient"].get("is_pregnant", False))
+    famhx_prostata = st.checkbox("Histórico familiar de câncer de próstata", value=st.session_state["patient"].get("famhx_prostata", False))
+    famhx_mama = st.checkbox("Histórico familiar de câncer de mama", value=st.session_state["patient"].get("famhx_mama", False))
+    famhx_colorretal = st.checkbox("Histórico familiar de câncer colorretal", value=st.session_state["patient"].get("famhx_colorretal", False))
+    dm = st.checkbox("Diabetes Mellitus", value=st.session_state["patient"].get("dm", False))
+    imunossuprimido = st.checkbox("Imunossuprimido", value=st.session_state["patient"].get("imunossuprimido", False))
+    dpoc = st.checkbox("DPOC", value=st.session_state["patient"].get("dpoc", False))
+    renal = st.checkbox("Doença renal crônica", value=st.session_state["patient"].get("renal_cronica", False))
+    hepatica = st.checkbox("Doença hepática crônica", value=st.session_state["patient"].get("hepatica_cronica", False))
+    neoplasia = st.checkbox("Neoplasia ativa", value=st.session_state["patient"].get("neoplasia_ativa", False))
+    alcoolismo = st.checkbox("Alcoolismo", value=False)
+    transplante = st.checkbox("Paciente transplantado (qualquer órgão)", value=False)
 
-    st.markdown("### 📋 Fatores clínicos e antecedentes")
-    col1, col2 = st.columns(2)
-    checks = {}
-    for i, item in enumerate(FACTS):
-        col = col1 if i % 2 == 0 else col2
-        with col:
-            checks[item["key"]] = st.checkbox(item["label"])
+with col_dir:
+    tabagismo = st.checkbox("Tabagista ou ex-tabagista", value=st.session_state["patient"].get("smoker_or_ex", False))
+    cardiovascular = st.checkbox("Doença cardiovascular crônica", value=st.session_state["patient"].get("cardiovascular_cronica", False))
+    dislipidemia = st.checkbox("Dislipidemia (LDL > 190 mg/dL)", value=False)
+    hipertensao = st.checkbox("Hipertensão arterial resistente (≥3 drogas)", value=False)
+    migranea = st.checkbox("Cefaleia tipo migrânea refratária", value=False)
+    colageno = st.checkbox("Doenças do colágeno / tecido conectivo", value=False)
+    contraceptivo = st.checkbox("Uso de contraceptivo oral", value=False)
+    hist_coronaria = st.checkbox("Histórico familiar de doença coronariana", value=False)
+    hist_ateromatose = st.checkbox("Histórico familiar de ateromatose sistêmica", value=False)
+    hist_avc = st.checkbox("Histórico familiar de AVC isquêmico", value=False)
+    hist_aaa = st.checkbox("Histórico familiar de aneurisma de aorta abdominal (AAA)", value=False)
+    hist_intracr = st.checkbox("Histórico familiar de aneurisma intracraniano", value=False)
+    outro_aneurisma = st.checkbox("Outro aneurisma arterial conhecido", value=False)
 
-    submitted = st.form_submit_button("Salvar/Atualizar")
-
-if submitted:
-    payload = {
-        "id": str(uuid.uuid4()),
-        "sex": sex,
-        "age": int(age),
-        "comorbidities": [],
-        "is_health_worker": is_health_worker,
-
-        # mapeamentos 1:1 com factors.yaml
-        "imc_ge_25": checks.get("imc_ge_25", False),
-        "smoker_or_ex": checks.get("smoker_or_ex", False),
-        "is_pregnant": checks.get("gestante", False),
-        "famhx_mama": checks.get("famhx_mama", False),
-        "famhx_prostata": checks.get("famhx_prostata", False),
-        "famhx_colorretal": checks.get("famhx_colorretal", False),
-        "dm": checks.get("dm", False),
-        "dpoc": checks.get("dpoc", False),
-        "imunossuprimido": checks.get("imunossuprimido", False),
-        "cardiovascular_cronica": checks.get("cardiovascular_cronica", False),
-        "renal_cronica": checks.get("renal_cronica", False),
-        "hepatica_cronica": checks.get("hepatica_cronica", False),
-        "neoplasia_ativa": checks.get("neoplasia_ativa", False),
-
-        # neurovascular (se você estiver usando)
-        "enxaqueca_refrataria": checks.get("enxaqueca_refrataria", False),
-        "hipertensao_resistente": checks.get("hipertensao_resistente", False),
-        "dislipidemia_ldl_maior_190": checks.get("dislipidemia_ldl_maior_190", False),
-        "hbA1c_maior_7_5": checks.get("hbA1c_maior_7_5", False),
-        "doencas_colageno": checks.get("doencas_colageno", False),
-        "alcoolismo": checks.get("alcoolismo", False),
-        "uso_aco": checks.get("uso_aco", False),
-        "histfam_coronariana": checks.get("histfam_coronariana", False),
-        "histfam_ateromatose_sist": checks.get("histfam_ateromatose_sist", False),
-        "histfam_avc_isquemico": checks.get("histfam_avc_isquemico", False),
-        "histfam_aneurisma_intracraniano": checks.get("histfam_aneurisma_intracraniano", False),
-
-        # AAA/aneurismas
-        "histfam_aaa": checks.get("histfam_aaa", False),
-        "outro_aneurisma": checks.get("outro_aneurisma", False),
-        "transplantado": checks.get("transplantado", False),
-    }
-    p = Patient(**payload).model_dump()
-    st.session_state["patient"] = p
-    st.success("Paciente salvo na sessão.")
-
-if "patient" in st.session_state:
-    st.subheader("Paciente atual")
-    st.json(st.session_state["patient"])
-else:
-    st.info("Preencha e clique em **Salvar/Atualizar**.")
-
+# botão de salvar
+if st.button("💾 Salvar/Atualizar", use_container_width=True):
+    st.session_state["patient"].update({
+        "imc_ge_25": imc_ge_25,
+        "is_pregnant": gestante,
+        "famhx_prostata": famhx_prostata,
+        "famhx_mama": famhx_mama,
+        "famhx_colorretal": famhx_colorretal,
+        "dm": dm,
+        "imunossuprimido": imunossuprimido,
+        "dpoc": dpoc,
+        "renal_cronica": renal,
+        "hepatica_cronica": hepatica,
+        "neoplasia_ativa": neoplasia,
+        "smoker_or_ex": tabagismo,
+        "cardiovascular_cronica": cardiovascular,
+    })
+    st.success("Dados atualizados com sucesso!")
