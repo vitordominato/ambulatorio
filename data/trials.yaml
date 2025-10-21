@@ -1,12 +1,87 @@
-- id: onco-lung-001
-  title: "Inibidor X em CPNPC estágio III"
-  status: "recruiting"
-  start_date: "2025-01-10"
-  end_date: "2026-12-31"
-  include_rules:
-    - { field: "age", op: ">=", value: 18, reason: "≥18 anos" }
-    - { field: "comorbidities", op: "in", value: ["Neoplasia Ativa"], reason: "Câncer ativo" }
-  exclude_rules: []
-  contacts: ["pesquisa@instituicao.org"]
-  links: ["https://exemplo.org/protocolo.pdf"]
+trials:
 
+  - id: t001_cv_tabagismo_cessation
+    title: Programa de Cessação do Tabagismo com Suporte Farmacológico e Aconselhamento
+    phase: "Prática assistencial / Observacional"
+    disease_area: "Cardiovascular / Prevenção"
+    condition: smoker_or_ex and age >= 18
+    inclusion:
+      - Adultos (≥18 anos) tabagistas ou ex-tabagistas (cessação < 12 meses).
+      - Disposição para participar de acompanhamento de 12 semanas.
+    exclusion:
+      - Gestantes sem autorização obstétrica.
+      - Contraindicações absolutas às medicações propostas.
+    sites:
+      - name: CHN – Ambulatório Cardiovascular
+        city: Niterói/RJ
+        contact: "coordenacao.cv@chn.com.br"
+    references:
+      - "Diretrizes brasileiras de cessação do tabagismo – SBPT"
+      - "USPSTF Tobacco Smoking Cessation Interventions"
+
+  - id: t002_dpoc_manejo_otimizado
+    title: Manejo Otimizado de DPOC com Educação em Saúde e Plano de Ação
+    phase: "Intervenção assistencial / Qualidade"
+    disease_area: "Pneumologia"
+    condition: dpoc and age >= 40
+    inclusion:
+      - Diagnóstico confirmado de DPOC (espirometria prévia quando disponível).
+      - ≥40 anos.
+    exclusion:
+      - Exacerbação aguda moderada/grave nas últimas 2 semanas.
+      - Impossibilidade de acompanhamento ambulatorial.
+    sites:
+      - name: CHN – Ambulatório de Pneumologia
+        city: Niterói/RJ
+    references:
+      - "GOLD 2024 – DPOC"
+
+  - id: t003_dm_risco_cv
+    title: Intervenção Multimodal em DM para Redução de Risco Cardiovascular
+    phase: "Intervenção assistencial"
+    disease_area: "Endocrinologia / Cardiologia"
+    condition: dm and age >= 18
+    inclusion:
+      - DM tipo 2.
+      - Disposição para metas de PA, LDL-C e HbA1c com seguimento trimestral.
+    exclusion:
+      - Hipoglicemias graves recorrentes.
+      - Doença terminal com expectativa < 6 meses.
+    sites:
+      - name: CHN – Ambulatório de Clínica Médica
+        city: Niterói/RJ
+    references:
+      - "ADA Standards of Care 2024"
+      - "ACC/AHA 2019 – Primary Prevention"
+
+  - id: t004_dislipidemia_lld190
+    title: Estratégia Intensiva para Dislipidemia Grave (LDL > 190 mg/dL)
+    phase: "Intervenção assistencial"
+    disease_area: "Lipidologia"
+    condition: dislipidemia_ldl190 and age >= 18
+    inclusion:
+      - LDL-C basal > 190 mg/dL em pelo menos uma medida válida.
+    exclusion:
+      - Hepatopatia descompensada ativa.
+      - Intolerância absoluta a estatinas e alternativas.
+    sites:
+      - name: CHN – Ambulatório Cardiovascular
+        city: Niterói/RJ
+    references:
+      - "ACC/AHA Cholesterol 2019"
+      - "SBPC/ML Diretrizes 2023"
+
+  - id: t005_rastreamento_aneurisma_familiar
+    title: Rastreamento Familiar de Aneurismas (AAA/Intracraniano)
+    phase: "Observacional / Protocolo de rastreio"
+    disease_area: "Vascular / Neurovascular"
+    condition: hist_aaa or hist_intracr
+    inclusion:
+      - Parente de primeiro grau com AAA ou aneurisma intracraniano.
+    exclusion:
+      - Contraindicação a exames de imagem indicados.
+    sites:
+      - name: CHN – Cirurgia Vascular / Neuro
+        city: Niterói/RJ
+    references:
+      - "SVB – Diretrizes de Doença Aneurismática 2021"
