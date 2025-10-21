@@ -1,6 +1,5 @@
-title,category,url
-Rastreamento de Mama,Oncologia,https://raw.githubusercontent.com/vitordominato/ambulatorio/main/cancer%20mama%20rastreo.pdf
-Rastreamento de Próstata,Oncologia,https://raw.githubusercontent.com/vitordominato/ambulatorio/main/rastreamento_prostat_2023_sociedades.pdf
-Tabagismo e TC de Tórax,Pneumologia,https://raw.githubusercontent.com/vitordominato/ambulatorio/main/tabagismo%20ca%20pulmao.pdf
-Calendário SBIm Adulto,Vacinas,https://raw.githubusercontent.com/vitordominato/ambulatorio/main/calend-pg-adulto-20-.pdf
-
+id,title,category,path_local,url_remote,tags,condition
+proto_cardio_tabagismo,Protocolo de Atendimento Ambulatorial Cardiológico – Prevenção (Tabagistas),Protocolo,Protocolo_Cardio_Prevencao.pdf,,cardiologia|tabagismo|prevenção,smoker_or_ex
+diretriz_sbpt_pulmao,Diretriz SBPT – Rastreamento de Câncer de Pulmão (Resumo),Diretriz,,https://exemplo.com/sbpt_pulmao_resumo.pdf,pneumologia|rastreamento,smoker_or_ex and age>=50
+calendario_sbim_adulto,SBIm – Calendário de Vacinação do Adulto 2024,Vacinas,,https://exemplo.com/sbim_adulto_2024.pdf,imunização|adulto,
+ms_pni_covid,MS/PNI – COVID-19 Atualizações 2025,Vacinas,,https://exemplo.com/ms_pni_covid_2025.pdf,covid|reforços,
