@@ -1,67 +1,53 @@
-# data/factors.yaml
-# Tudo que você marcar aqui vira checkbox no cadastro.
-# Para adicionar/remover, basta mexer nesta lista.
-
 fatores:
-  # já existentes
   - key: imc_ge_25
-    label: "IMC ≥ 25"
+    label: IMC ≥ 25
+  - key: is_pregnant
+    label: Gestante
   - key: smoker_or_ex
-    label: "Tabagista ou ex-tabagista"
-  - key: gestante
-    label: "Gestante"
+    label: Tabagista ou ex-tabagista
   - key: famhx_mama
-    label: "Histórico familiar de câncer de mama"
+    label: Histórico familiar de câncer de mama
   - key: famhx_prostata
-    label: "Histórico familiar de câncer de próstata"
+    label: Histórico familiar de câncer de próstata
   - key: famhx_colorretal
-    label: "Histórico familiar de câncer colorretal"
+    label: Histórico familiar de câncer colorretal
   - key: dm
-    label: "Diabetes Mellitus"
+    label: Diabetes Mellitus
   - key: dpoc
-    label: "DPOC"
+    label: DPOC
   - key: imunossuprimido
-    label: "Imunossuprimido"
+    label: Imunossuprimido
   - key: cardiovascular_cronica
-    label: "Doença cardiovascular crônica"
+    label: Doença cardiovascular crônica
   - key: renal_cronica
-    label: "Doença renal crônica"
+    label: Doença renal crônica
   - key: hepatica_cronica
-    label: "Doença hepática crônica"
+    label: Doença hepática crônica
   - key: neoplasia_ativa
-    label: "Neoplasia ativa"
-
-  # novos p/ neurovascular
-  - key: enxaqueca_refrataria
-    label: "Cefaleia tipo migrânea refratária"
+    label: Neoplasia ativa
+  - key: dislipidemia_ldl190
+    label: Dislipidemia (LDL > 190 mg/dL)
   - key: hipertensao_resistente
-    label: "Hipertensão arterial resistente (≥3 drogas)"
-  - key: dislipidemia_ldl_maior_190
-    label: "Dislipidemia (LDL > 190 mg/dL)"
-  - key: hbA1c_maior_7_5
-    label: "Diabetes (HbA1c > 7,5%)"
-  - key: doencas_colageno
-    label: "Doenças do colágeno/tecido conectivo"
-  - key: alcoolismo
-    label: "Alcoolismo"
-  - key: uso_aco
-    label: "Uso de contraceptivo oral"
-
-  # históricos familiares para neurovascular
-  - key: histfam_coronariana
-    label: "Hist. familiar de doença coronariana"
-  - key: histfam_ateromatose_sist
-    label: "Hist. familiar de ateromatose sistêmica"
-  - key: histfam_avc_isquemico
-    label: "Hist. familiar de AVC isquêmico"
-  - key: histfam_aneurisma_intracraniano
-    label: "Hist. familiar de aneurisma intracraniano"
-
-  # AAA/aneurismas gerais
-  - key: histfam_aaa
-    label: "Hist. familiar de AAA"
+    label: Hipertensão arterial resistente (≥ 3 drogas)
+  - key: migranea_refrataria
+    label: Cefaleia tipo migrânea refratária
+  - key: colageno_tecido
+    label: Doenças do colágeno/tecido conectivo
+  - key: contraceptivo_oral
+    label: Uso de contraceptivo oral
+  - key: hist_coronaria
+    label: Histórico familiar de doença coronariana
+  - key: hist_ateromatose
+    label: Histórico familiar de ateromatose sistêmica
+  - key: hist_avc_isquemico
+    label: Histórico familiar de AVC isquêmico
+  - key: hist_aaa
+    label: Histórico familiar de aneurisma de aorta abdominal (AAA)
+  - key: hist_intracr
+    label: Histórico familiar de aneurisma intracraniano
   - key: outro_aneurisma
-    label: "Outro aneurisma arterial conhecido"
+    label: Outro aneurisma arterial conhecido
+  - key: alcoolismo
+    label: Alcoolismo
   - key: transplantado
-    label: "Paciente transplantado (qualquer órgão)"
-
+    label: Paciente transplantado (qualquer órgão)
