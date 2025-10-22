@@ -1,76 +1,188 @@
-import os, glob
+# -*- coding: utf-8 -*-
+# pages/5_📚_Biblioteca_PDFs.py
+
+from __future__ import annotations
+import os
+import glob
+import pandas as pd
 import streamlit as st
-import urllib.parse
-import requests
 
-st.title("📚 Biblioteca de Guias e Protocolos (GitHub)")
+# --- componente opcional para visualização elegante ---
+try:
+    from components.pdf_viewer import show_pdf
+    _HAS_PDF_VIEW = True
+except Exception:
+    _HAS_PDF_VIEW = False
 
-OWNER = "vitordominato"
-REPO  = "ambulatorio"
-BRANCH = "main"
+st.title("📚 Biblioteca de Guias e Protocolos")
 
-RAW_BASE = f"https://raw.githubusercontent.com/{OWNER}/{REPO}/{BRANCH}"
+DATA_DIR = "data"
+CSV_PATH = os.path.join(DATA_DIR, "pdfs_index.csv")
 
+# -----------------------------------------------------------
+# Utils
+# -----------------------------------------------------------
 @st.cache_data(ttl=300, show_spinner=False)
-def list_pdfs_locally():
-    # Varre o repositório clonado pelo Streamlit (sem usar API do GitHub)
+def list_all_local_pdfs() -> list[dict]:
+    """Lista TODOS os PDFs do repositório (fallback visual)."""
     files = sorted(glob.glob("**/*.pdf", recursive=True))
-    items = []
-    for p in files:
-        # ignora possíveis pastas de cache/venv
-        if any(x in p.split(os.sep) for x in [".venv", "venv", ".git"]):
-            continue
-        url = f"{RAW_BASE}/{urllib.parse.quote(p)}"
-        items.append({"title": os.path.basename(p), "path": p, "url": url})
-    return items
-
-def list_pdfs_via_api(path=""):
-    # Fallback: usa API do GitHub, com token se presente em st.secrets
-    headers = {}
-    token = st.secrets.get("GITHUB_TOKEN", None)
-    if token:
-        headers["Authorization"] = f"token {token}"
-
-    url = f"https://api.github.com/repos/{OWNER}/{REPO}/contents/{path}?ref={BRANCH}"
-    r = requests.get(url, headers=headers, timeout=15)
-    r.raise_for_status()
     out = []
-    for it in r.json():
-        if it["type"] == "file" and it["name"].lower().endswith(".pdf"):
-            out.append({"title": it["name"], "path": it["path"], "url": it["download_url"]})
-        elif it["type"] == "dir":
-            out.extend(list_pdfs_via_api(it["path"]))
+    for p in files:
+        if any(x in p.split(os.sep) for x in [".venv", "venv", ".git", "__pycache__"]):
+            continue
+        out.append({"title": os.path.basename(p), "path_local": p, "url_remote": "", "category": "", "tags": ""})
     return out
 
-# 1) Tenta listar localmente (sem limite de rate)
-pdfs = list_pdfs_locally()
-
-# 2) Se nada encontrado (situação rara), tenta API (com token se houver)
-if not pdfs:
+def _safe_read_csv(path: str) -> pd.DataFrame | None:
+    if not os.path.isfile(path):
+        return None
     try:
-        pdfs = list_pdfs_via_api("")
+        df = pd.read_csv(path, encoding="utf-8")
+        for col in ["id", "title", "category", "path_local", "url_remote", "tags", "condition"]:
+            if col not in df.columns:
+                df[col] = ""
+        return df.fillna("")
     except Exception as e:
-        st.error(f"Não foi possível listar PDFs: {e}")
-        st.caption("Sugestão: defina um GITHUB_TOKEN em st.secrets ou use a varredura local do repo.")
-        st.stop()
+        st.error(f"Erro ao ler `{path}`: {e}")
+        return None
 
-if not pdfs:
-    st.info("Nenhum PDF encontrado no repositório.")
+def build_ctx() -> dict:
+    """Contexto para avaliar 'condition' (usa estado do paciente)."""
+    p = st.session_state.get("patient", {}) or {}
+    sex = p.get("sex", "M")
+    if sex not in ("M", "F"):
+        sex = "M"
+    ctx = {"age": int(p.get("age", 0) or 0), "sex": sex}
+    for k, v in p.items():
+        if isinstance(v, bool):
+            ctx[k] = v
+    return ctx
+
+def eval_condition(expr: str | int | float | None, ctx: dict) -> bool:
+    if expr is None or (isinstance(expr, str) and not expr.strip()):
+        return True
+    if isinstance(expr, (int, float)):
+        return bool(expr)
+    if isinstance(expr, str):
+        try:
+            return bool(eval(expr, {"__builtins__": None}, ctx))
+        except Exception:
+            return False
+    return False
+
+def parse_tags(s: str) -> list[str]:
+    s = (s or "").strip()
+    if not s:
+        return []
+    return [x.strip() for x in s.split("|") if x.strip()]
+
+# -----------------------------------------------------------
+# Carregamento
+# -----------------------------------------------------------
+df = _safe_read_csv(CSV_PATH)
+ctx = build_ctx()
+
+if df is None:
+    st.info("Índice `data/pdfs_index.csv` não encontrado. Mostrando todos os PDFs locais como fallback.")
+    raws = list_all_local_pdfs()
+    if not raws:
+        st.warning("Nenhum PDF encontrado no repositório.")
+        st.stop()
+    # fallback simples (sem filtros por categoria/condição)
+    for item in raws:
+        if _HAS_PDF_VIEW:
+            show_pdf(title=item["title"], local_path=item["path_local"], url=None, embed=False, key=item["title"])
+        else:
+            st.markdown(f"**{item['title']}**  \n`{item['path_local']}`")
     st.stop()
 
-# Busca e seleção
-q = st.text_input("Buscar por nome do arquivo...")
-data = [p for p in pdfs if (q.lower() in p["title"].lower())] if q else pdfs
-st.write(f"Encontrados **{len(data)}** documentos.")
-options = [f'{p["title"]} — ({p["path"]})' for p in data]
-sel = st.selectbox("Abrir documento", ["Selecione..."] + options)
+# normaliza colunas
+df["category"] = df["category"].astype(str).fillna("")
+df["tags"] = df["tags"].astype(str).fillna("")
+df["condition"] = df["condition"].astype(str).fillna("")
+df["path_local"] = df["path_local"].astype(str).fillna("")
+df["url_remote"] = df["url_remote"].astype(str).fillna("")
+df["title"] = df["title"].astype(str).fillna("Documento")
 
-if sel != "Selecione...":
-    idx = options.index(sel) - 1
-    url = data[idx]["url"]
-    st.download_button("Baixar PDF", url, type="primary")
-    st.markdown(
-        f'<iframe src="{url}" width="100%" height="720" style="border:none;"></iframe>',
-        unsafe_allow_html=True
-    )
+# -----------------------------------------------------------
+# Filtros (sidebar)
+# -----------------------------------------------------------
+with st.sidebar:
+    st.subheader("Filtros")
+    categorias = sorted([c for c in df["category"].unique() if c])
+    cat_sel = st.multiselect("Categoria", options=categorias, default=categorias)
 
+    # tags possíveis (split por '|')
+    all_tags = sorted(set(sum([parse_tags(t) for t in df["tags"]], [])))
+    tag_sel = st.multiselect("Tags", options=all_tags, default=[])
+
+    only_applicable = st.checkbox("Mostrar apenas aplicáveis ao paciente", value=False)
+    try_embed = st.checkbox("Pré-visualizar via iframe (quando possível)", value=False)
+
+# aplica filtros de categoria/tags
+mask_cat = df["category"].isin(cat_sel) if cat_sel else df["category"].astype(bool)
+mask_tag = df["tags"].apply(lambda s: True if not tag_sel else any(t in parse_tags(s) for t in tag_sel))
+
+filtered = df[mask_cat & mask_tag].copy()
+
+# aplica condição por paciente, se marcado
+if only_applicable:
+    filtered["__cond"] = filtered["condition"].apply(lambda e: eval_condition(e, ctx))
+    filtered = filtered[filtered["__cond"] == True]  # noqa: E712
+
+st.caption(f"Encontrados **{len(filtered)}** documentos.")
+
+# -----------------------------------------------------------
+# Busca textual
+# -----------------------------------------------------------
+q = st.text_input("Buscar por título…").strip().lower()
+if q:
+    filtered = filtered[filtered["title"].str.lower().str.contains(q)]
+
+# -----------------------------------------------------------
+# Renderização
+# -----------------------------------------------------------
+if filtered.empty:
+    st.info("Nenhum documento com os filtros atuais.")
+else:
+    for _, row in filtered.iterrows():
+        title = row["title"]
+        local_path = row["path_local"] or ""
+        remote = row["url_remote"] or ""
+        cat = row["category"]
+        tags = " | ".join(parse_tags(row["tags"]))
+
+        st.markdown(f"#### {title}")
+        meta = []
+        if cat:
+            meta.append(f"**Categoria:** {cat}")
+        if tags:
+            meta.append(f"**Tags:** {tags}")
+        if meta:
+            st.caption(" • ".join(meta))
+
+        if _HAS_PDF_VIEW:
+            show_pdf(
+                title="",
+                local_path=local_path if local_path else None,
+                url=remote if remote else None,
+                embed=try_embed,
+                key=f"pdf_{row.get('id','')}"
+            )
+        else:
+            # fallback simples
+            cols = st.columns(2)
+            if local_path and os.path.isfile(local_path):
+                with open(local_path, "rb") as f:
+                    pdf_bytes = f.read()
+                cols[0].download_button(
+                    "⬇️ Baixar PDF (local)", data=pdf_bytes,
+                    file_name=os.path.basename(local_path),
+                    mime="application/pdf", use_container_width=True
+                )
+            if remote:
+                cols[1].link_button("🔗 Abrir PDF (online)", url=remote, use_container_width=True)
+            if try_embed and (remote or local_path):
+                st.components.v1.iframe(src=(remote or local_path), height=640)
+
+        st.divider()
